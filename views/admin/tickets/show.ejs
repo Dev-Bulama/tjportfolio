@@ -1,0 +1,47 @@
+<%- include('../../partials/admin/page-head', { title: t.ticketNo, subtitle: issues[t.issueType] + ' · opened ' + formatDateTime(t.createdAt), crumbs: [['Tickets', A('/tickets')], [t.ticketNo, null]] }) %>
+<div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+  <div class="grid content-start gap-6">
+    <article class="card p-6">
+      <div class="flex flex-wrap gap-2"><span class="chip"><%= labels[t.status] %></span><span class="chip capitalize <%= t.priority === 'critical' ? 'chip-danger' : t.priority === 'high' ? 'chip-gold' : '' %>"><%= t.priority %></span><% if (project) { %><span class="chip"><%= project %></span><% } %></div>
+      <p class="mt-5 whitespace-pre-line text-ink"><%= t.description %></p>
+      <% if (t.affectedUrl) { %><p class="mt-4 text-sm">Affected URL: <a class="underline" href="<%= safeUrl(t.affectedUrl) %>" target="_blank" rel="noopener noreferrer"><%= t.affectedUrl %></a></p><% } %>
+      <% if (attachments.length) { %>
+        <ul class="mt-5 grid grid-cols-3 gap-3 sm:grid-cols-5"><% attachments.forEach(a => { %><li><a href="<%= A('/files/' + a.id) %>" target="_blank" rel="noopener" class="block overflow-hidden rounded-lg border border-line"><img src="<%= A('/files/' + a.id) %>" alt="Screenshot <%= a.originalName %>" class="aspect-square w-full object-cover" loading="lazy"></a></li><% }) %></ul>
+      <% } %>
+    </article>
+    <ol class="grid gap-3">
+      <% updates.forEach(({ u, user: who }) => { %>
+        <li class="card p-4 text-sm <%= u.isPublic ? '' : '!bg-surface-2/60 border-dashed' %>">
+          <p class="text-xs text-muted"><strong class="text-ink"><%= who || 'System' %></strong> · <%= u.isPublic ? 'visible to client' : 'internal' %> · <%= timeAgo(u.createdAt) %><% if (u.statusTo) { %> · <%= labels[u.statusFrom] || u.statusFrom %> → <strong class="text-ink"><%= labels[u.statusTo] %></strong><% } %></p>
+          <% if (u.body) { %><p class="mt-2 whitespace-pre-line"><%= u.body %></p><% } %>
+        </li>
+      <% }) %>
+    </ol>
+    <form method="post" action="<%= A('/tickets/' + t.id + '/update') %>" class="card grid gap-4 p-6">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field"><label class="label" for="body">Add an update</label><textarea class="textarea" id="body" name="body" rows="5" placeholder="What changed? What do you need from the client?"></textarea></div>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="field"><label class="label" for="status">Status</label><select class="select" id="status" name="status"><% statuses.forEach(s => { %><option value="<%= s %>" <%= t.status===s?'selected':'' %>><%= labels[s] %></option><% }) %></select></div>
+        <div class="field"><label class="label" for="priority">Priority</label><select class="select" id="priority" name="priority"><% priorities.forEach(p => { %><option value="<%= p %>" <%= t.priority===p?'selected':'' %>><%= p %></option><% }) %></select></div>
+        <div class="field"><label class="label" for="dueAt">Due date</label><input class="input" type="date" id="dueAt" name="dueAt" value="<%= t.dueAt ? new Date(t.dueAt).toISOString().slice(0,10) : '' %>"></div>
+      </div>
+      <fieldset class="flex flex-wrap gap-4 text-sm"><legend class="sr-only">Visibility</legend><label class="flex items-center gap-2"><input type="radio" class="checkbox" name="visibility" value="public" checked> Public reply (emailed to client, shown on status page)</label><label class="flex items-center gap-2"><input type="radio" class="checkbox" name="visibility" value="internal"> Internal note</label></fieldset>
+      <div><button class="btn btn-primary btn-sm">Save update</button></div>
+    </form>
+  </div>
+  <aside class="grid content-start gap-6">
+    <dl class="card grid gap-3 p-5 text-sm">
+      <div><dt class="text-muted">Client</dt><dd class="text-ink"><%= t.clientName %><%= t.company ? ' · ' + t.company : '' %></dd></div>
+      <div><dt class="text-muted">Email</dt><dd><a class="text-ink underline" href="mailto:<%= t.email %>"><%= t.email %></a></dd></div>
+      <% if (t.phone) { %><div><dt class="text-muted">Phone</dt><dd class="text-ink"><%= t.phone %></dd></div><% } %>
+      <div><dt class="text-muted">Prefers</dt><dd class="capitalize text-ink"><%= t.contactMethod %></dd></div>
+      <% if (t.dueAt) { %><div><dt class="text-muted">Due</dt><dd class="text-ink"><%= formatDate(t.dueAt) %></dd></div><% } %>
+      <% if (t.resolvedAt) { %><div><dt class="text-muted">Resolved</dt><dd class="text-ink"><%= formatDateTime(t.resolvedAt) %></dd></div><% } %>
+    </dl>
+    <form method="post" action="<%= A('/tickets/' + t.id + '/update') %>" class="card grid gap-3 p-5">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="status" value="<%= t.status %>"><input type="hidden" name="priority" value="<%= t.priority %>"><input type="hidden" name="dueAt" value="<%= t.dueAt ? new Date(t.dueAt).toISOString().slice(0,10) : '' %>"><input type="hidden" name="visibility" value="internal">
+      <label class="label" for="notes">Private notes</label><textarea class="textarea" id="notes" name="notes" rows="5"><%= t.notes || '' %></textarea>
+      <button class="btn btn-outline btn-sm">Save notes</button>
+    </form>
+  </aside>
+</div>

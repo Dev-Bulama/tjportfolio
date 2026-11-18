@@ -1,0 +1,38 @@
+<%- include('../../partials/admin/page-head', { title: 'Messages', subtitle: 'Enquiries from the contact form. Senders get an automatic confirmation.', actions: `<a class="btn btn-outline btn-sm" href="${A('/inbox')}${qs({ status, q }, { export: 'csv' })}">${icon('download','size-4')} Export CSV</a>` }) %>
+<div class="card">
+  <form method="get" class="flex flex-wrap items-center gap-3 border-b border-line p-4" role="search">
+    <input class="input max-w-xs !py-2 text-sm" name="q" value="<%= q %>" placeholder="Search name, email, message…" aria-label="Search messages">
+    <% if (status) { %><input type="hidden" name="status" value="<%= status %>"><% } %>
+    <button class="btn btn-outline btn-sm">Search</button>
+    <nav class="ml-auto flex flex-wrap gap-1 text-sm" aria-label="Status">
+      <% [['','Inbox'],['new','New'],['read','Read'],['replied','Replied'],['archived','Archived'],['spam','Spam']].forEach(([v,l]) => { %>
+        <a href="<%= A('/inbox') %><%= v ? '?status=' + v : '' %>" class="rounded-full px-3 py-1.5 <%= status === v ? 'bg-surface-2 font-semibold text-ink' : 'text-muted hover:text-ink' %>"><%= l %><% if (v && counts[v]) { %> <span class="text-muted">(<%= counts[v] %>)</span><% } %></a>
+      <% }) %>
+    </nav>
+  </form>
+  <% if (!rows.length) { %>
+    <div class="px-6 py-16 text-center"><span class="mx-auto grid size-14 place-items-center rounded-full bg-surface-2 text-gold-ink"><%- icon('inbox','size-6') %></span><p class="mt-4 font-display text-xl text-ink">No messages here</p><p class="mt-1 text-sm text-muted">New enquiries from the contact form appear here.</p></div>
+  <% } else { %>
+  <form method="post" action="<%= A('/inbox/bulk') %>" data-bulk-form>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="flex flex-wrap items-center gap-2 border-b border-line bg-surface-2/50 px-4 py-2 text-sm" data-bulk-bar hidden>
+      <span data-bulk-count class="font-semibold text-ink"></span>
+      <button name="action" value="read" class="btn btn-ghost btn-xs">Mark read</button>
+      <button name="action" value="archived" class="btn btn-ghost btn-xs">Archive</button>
+      <button name="action" value="spam" class="btn btn-ghost btn-xs text-danger">Spam</button>
+    </div>
+    <ul class="divide-y divide-line">
+      <% rows.forEach(m => { %>
+        <li class="flex items-start gap-3 px-4 py-3 hover:bg-surface-2/50">
+          <input type="checkbox" class="checkbox mt-1" name="ids" value="<%= m.id %>" data-row-check aria-label="Select message from <%= m.name %>">
+          <a href="<%= A('/inbox/' + m.id) %>" class="grid min-w-0 flex-1 gap-0.5 sm:grid-cols-[14rem_1fr_auto] sm:gap-4">
+            <span class="truncate <%= m.status === 'new' ? 'font-semibold text-ink' : 'text-body' %>"><% if (m.status === 'new') { %><span class="mr-1.5 inline-block size-2 rounded-full bg-gold"></span><% } %><%= m.name %></span>
+            <span class="truncate text-sm"><span class="chip mr-2 !py-0.5"><%= m.inquiryType %></span><span class="text-muted"><%= m.message.slice(0, 140) %></span></span>
+            <span class="whitespace-nowrap text-xs text-muted"><%= timeAgo(m.createdAt) %></span>
+          </a>
+        </li>
+      <% }) %>
+    </ul>
+  </form>
+  <% } %>
+</div>

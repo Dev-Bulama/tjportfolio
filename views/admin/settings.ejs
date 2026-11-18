@@ -1,0 +1,104 @@
+<%
+  const def = { titleField: '_', publicUrl: null };
+  const fld = (f, values) => include('../partials/admin/fields/field', { f, values, errors: {}, def, options: {}, icons: [], media });
+  const tabs = [['profile','Profile'],['branding','Branding'],['seo','SEO'],['integrations','Integrations'],['site','Site & maintenance']];
+%>
+<%- include('../partials/admin/page-head', { title: 'Site settings', subtitle: 'Profile, branding, SEO defaults, integrations and site-wide switches.' }) %>
+<nav class="sticky top-[57px] z-20 -mx-4 mb-6 flex gap-1 overflow-x-auto border-b border-line bg-bg/95 px-4 py-2 text-sm backdrop-blur md:-mx-6 md:px-6" aria-label="Settings sections">
+  <% tabs.forEach(([k,l]) => { %><a href="#<%= k %>" class="whitespace-nowrap rounded-full px-3 py-1.5 text-muted hover:bg-surface-2 hover:text-ink"><%= l %></a><% }) %>
+</nav>
+<div class="grid gap-8">
+  <form id="profile" method="post" action="<%= A('/settings/profile') %>" class="card scroll-mt-32 p-6" data-editor>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <h2 class="font-display text-xl text-ink">Profile</h2>
+    <p class="help mt-1">Values in [[double brackets]] are placeholders and are never shown on the public site.</p>
+    <fieldset class="mt-6 grid gap-5 md:grid-cols-6" <%= readOnly ? 'disabled' : '' %>>
+      <%- fld({ name: 'fullName', label: 'Full name', type: 'text', width: 'half', required: true }, s.profile) %>
+      <%- fld({ name: 'displayName', label: 'Display name', type: 'text', width: 'half' }, s.profile) %>
+      <%- fld({ name: 'headline', label: 'Headline', type: 'text', max: 300 }, s.profile) %>
+      <%- fld({ name: 'positioning', label: 'Hero positioning line', type: 'text', max: 300 }, s.profile) %>
+      <%- fld({ name: 'shortBio', label: 'Short bio', type: 'textarea', rows: 4, max: 2000 }, s.profile) %>
+      <%- fld({ name: 'longBio', label: 'Long bio (About page)', type: 'richtext' }, s.profile) %>
+      <%- fld({ name: 'portraitId', label: 'Portrait', type: 'image', accept: 'image', width: 'half', help: 'Portrait orientation (4:5) works best.' }, s.profile) %>
+      <div class="field md:col-span-3"><label class="label" for="sec-ids">Secondary photo IDs</label><input class="input" id="sec-ids" name="secondaryPhotoIds" value="<%= (s.profile.secondaryPhotoIds || []).join(',') %>" placeholder="e.g. 12, 15"><p class="help">Media IDs from the library, comma-separated.</p></div>
+      <%- fld({ name: 'location', label: 'Location', type: 'text', width: 'half' }, s.profile) %>
+      <%- fld({ name: 'officeCity', label: 'Office city (contact page)', type: 'text', width: 'half' }, s.profile) %>
+      <%- fld({ name: 'email', label: 'Public email', type: 'text', width: 'third' }, s.profile) %>
+      <%- fld({ name: 'phone', label: 'Phone', type: 'text', width: 'third' }, s.profile) %>
+      <%- fld({ name: 'whatsapp', label: 'WhatsApp number (international format)', type: 'text', width: 'third' }, s.profile) %>
+      <%- fld({ name: 'availabilityStatus', label: 'Availability', type: 'select', options: [['available','Available'],['booked','Booked']], width: 'third', required: true }, s.profile) %>
+      <%- fld({ name: 'availability', label: 'Availability text', type: 'text', width: 'third' }, s.profile) %>
+      <%- fld({ name: 'bookedUntil', label: 'Booked until (if booked)', type: 'text', width: 'third', placeholder: 'March 2027' }, s.profile) %>
+    </fieldset>
+    <% if (!readOnly) { %><button class="btn btn-primary btn-sm mt-6">Save profile</button><% } %>
+  </form>
+
+  <form id="branding" method="post" action="<%= A('/settings/branding') %>" class="card scroll-mt-32 p-6">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <h2 class="font-display text-xl text-ink">Branding</h2>
+    <fieldset class="mt-6 grid gap-5 md:grid-cols-6" <%= readOnly ? 'disabled' : '' %>>
+      <%- fld({ name: 'logoLightId', label: 'Logo (light mode)', type: 'image', accept: 'image', width: 'half', help: 'Leave empty to use the “TB” wordmark.' }, s.branding) %>
+      <%- fld({ name: 'logoDarkId', label: 'Logo (dark mode)', type: 'image', accept: 'image', width: 'half' }, s.branding) %>
+      <%- fld({ name: 'faviconId', label: 'Favicon (square PNG)', type: 'image', accept: 'image', width: 'half' }, s.branding) %>
+      <div class="field md:col-span-3"><label class="label" for="accent">Accent colour override</label><div class="flex items-center gap-3"><input type="color" value="<%= s.branding.accentOverride || '#B8925A' %>" class="size-11 cursor-pointer rounded-lg border border-line" aria-label="Pick accent colour" data-color-sync="accent"><input class="input font-mono" id="accent" name="accentOverride" value="<%= s.branding.accentOverride %>" placeholder="#B8925A"></div><p class="help">Checked for contrast before saving. Leave empty for the default gold.</p></div>
+      <%- fld({ name: 'fontPreset', label: 'Font pairing', type: 'select', required: true, options: [['editorial','Editorial — Fraunces + Inter'],['classic','Classic — Fraunces throughout'],['modern','Modern — Inter throughout']], width: 'half' }, s.branding) %>
+      <%- fld({ name: 'duotonePortrait', label: 'Navy duotone grade on portrait', type: 'boolean', width: 'half' }, s.branding) %>
+    </fieldset>
+    <% if (!readOnly) { %><button class="btn btn-primary btn-sm mt-6">Save branding</button><% } %>
+  </form>
+
+  <form id="seo" method="post" action="<%= A('/settings/seo') %>" class="card scroll-mt-32 p-6">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <h2 class="font-display text-xl text-ink">SEO defaults</h2>
+    <fieldset class="mt-6 grid gap-5 md:grid-cols-6" <%= readOnly ? 'disabled' : '' %>>
+      <%- fld({ name: 'siteName', label: 'Site name', type: 'text', width: 'half' }, s.seo) %>
+      <%- fld({ name: 'titleTemplate', label: 'Title template', type: 'text', width: 'half', help: '%s is replaced by the page title.' }, s.seo) %>
+      <%- fld({ name: 'defaultTitle', label: 'Homepage title', type: 'text' }, s.seo) %>
+      <%- fld({ name: 'defaultDescription', label: 'Default meta description', type: 'textarea', rows: 3, max: 320 }, s.seo) %>
+      <%- fld({ name: 'ogImageId', label: 'Default share image (otherwise generated)', type: 'image', accept: 'image', width: 'half' }, s.seo) %>
+      <div class="grid gap-5 md:col-span-3">
+        <%- fld({ name: 'gscVerification', label: 'Google Search Console verification code', type: 'text' }, s.seo) %>
+        <%- fld({ name: 'ga4Id', label: 'Google Analytics 4 ID (optional, off by default)', type: 'text', placeholder: 'G-XXXXXXX', help: 'Enabling GA4 sets cookies; update the privacy notice if you do.' }, s.seo) %>
+        <%- fld({ name: 'twitterHandle', label: 'X / Twitter handle', type: 'text', placeholder: '@handle' }, s.seo) %>
+      </div>
+    </fieldset>
+    <% if (!readOnly) { %><button class="btn btn-primary btn-sm mt-6">Save SEO</button><% } %>
+  </form>
+
+  <section id="integrations" class="card scroll-mt-32 p-6">
+    <h2 class="font-display text-xl text-ink">Integrations</h2>
+    <p class="help mt-1">Secrets are read from environment variables on the server; this page only shows whether each is configured.</p>
+    <ul class="mt-5 grid gap-3 text-sm md:grid-cols-2">
+      <% [['Email (SMTP)', status.smtp, status.smtp || 'Set SMTP_USER and SMTP_PASSWORD'], ['Admin notifications to', status.adminNotify, status.adminNotify || 'Set ADMIN_NOTIFY_EMAIL'], ['Cloudflare Turnstile', status.turnstile, status.turnstile ? 'Configured' : 'Set TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY (honeypot + rate limiting still active)'], ['Storage', status.storage && status.storage.ok, (status.driver) + ' — ' + (status.storage ? status.storage.detail : 'not checked')], ['S3 / R2', status.s3, status.s3 ? 'Configured' : 'Optional — S3_ENDPOINT, S3_BUCKET, keys'], ['Scheduled jobs (cron)', status.cron, status.cron ? 'CRON_SECRET set — see DEPLOY.md' : 'Set CRON_SECRET and configure a cron'] ].forEach(([l, ok, d]) => { %>
+        <li class="flex items-start gap-3 rounded-xl border border-line p-3"><span class="<%= ok ? 'text-teal' : 'text-gold-ink' %>"><%- icon(ok ? 'circle-check' : 'circle-alert','size-5') %></span><span><strong class="block text-ink"><%= l %></strong><span class="text-muted"><%= d %></span></span></li>
+      <% }) %>
+    </ul>
+    <form method="post" action="<%= A('/settings/test-email') %>" class="mt-4"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-outline btn-sm" <%= readOnly ? 'disabled' : '' %>><%- icon('mail','size-4') %> Send test email to me</button></form>
+    <form method="post" action="<%= A('/settings/integrations') %>" class="mt-8 border-t border-line pt-6">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <fieldset class="grid gap-5 md:grid-cols-6" <%= readOnly ? 'disabled' : '' %>>
+        <%- fld({ name: 'calendlyUrl', label: 'Calendly / Cal.com booking URL', type: 'url', width: 'half', help: 'Shown on the contact page; loads only when the visitor clicks.' }, s.integrations) %>
+        <%- fld({ name: 'whatsappMessage', label: 'WhatsApp pre-filled message', type: 'text', width: 'half' }, s.integrations) %>
+      </fieldset>
+      <% if (!readOnly) { %><button class="btn btn-primary btn-sm mt-6">Save integrations</button><% } %>
+    </form>
+  </section>
+
+  <form id="site" method="post" action="<%= A('/settings/site') %>" class="card scroll-mt-32 p-6">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <h2 class="font-display text-xl text-ink">Site & maintenance</h2>
+    <fieldset class="mt-6 grid gap-5 md:grid-cols-6" <%= readOnly ? 'disabled' : '' %>>
+      <div class="md:col-span-6 rounded-xl border <%= s.site.maintenanceMode ? 'border-danger' : 'border-line' %> p-4"><%- fld({ name: 'maintenanceMode', label: 'Maintenance mode', type: 'boolean', help: 'Visitors see a “back shortly” page. Signed-in staff still see the site.' }, s.site) %></div>
+      <%- fld({ name: 'maintenanceMessage', label: 'Maintenance message', type: 'text', max: 300 }, s.site) %>
+      <%- fld({ name: 'footerBlurb', label: 'Footer line', type: 'text', max: 200 }, s.site) %>
+      <%- fld({ name: 'imageMaxMb', label: 'Max image upload (MB)', type: 'number', min: 1, max: 25, width: 'third' }, s.site) %>
+      <%- fld({ name: 'pdfMaxMb', label: 'Max PDF upload (MB)', type: 'number', min: 1, max: 25, width: 'third' }, s.site) %>
+      <%- fld({ name: 'newsletterEnabled', label: 'Newsletter signup in footer', type: 'boolean', width: 'third' }, s.site) %>
+      <%- fld({ name: 'analyticsRetentionDays', label: 'Keep raw analytics for (days)', type: 'number', min: 30, max: 730, width: 'half' }, s.site) %>
+      <%- fld({ name: 'trashRetentionDays', label: 'Empty trash after (days)', type: 'number', min: 7, max: 365, width: 'half' }, s.site) %>
+    </fieldset>
+    <% if (!readOnly) { %><button class="btn btn-primary btn-sm mt-6">Save site settings</button><% } %>
+  </form>
+  <p class="text-sm text-muted">Homepage sections, social links and stats have their own screens: <a class="underline" href="<%= A('/content/homepage') %>">Homepage</a> · <a class="underline" href="<%= A('/content/socials') %>">Social links</a> · <a class="underline" href="<%= A('/content/stats') %>">Stats</a> · <a class="underline" href="<%= A('/menus') %>">Menus</a></p>
+</div>
+<%- include('../partials/admin/media-picker') %>

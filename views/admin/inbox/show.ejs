@@ -1,0 +1,41 @@
+<%- include('../../partials/admin/page-head', { title: m.name, crumbs: [['Messages', A('/inbox')], ['Message', null]] }) %>
+<div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
+  <div class="grid content-start gap-6">
+    <article class="card p-6">
+      <div class="flex flex-wrap items-center gap-2 text-sm"><span class="chip"><%= m.inquiryType %></span><%- include('../../partials/admin/status-badge', { value: m.status }) %><span class="ml-auto text-muted"><%= formatDateTime(m.createdAt) %></span></div>
+      <p class="mt-5 whitespace-pre-line text-[1rem] text-ink"><%= m.message %></p>
+      <% if (attachment) { %><a class="btn btn-outline btn-sm mt-5" href="<%= A('/files/' + attachment.id) %>" target="_blank" rel="noopener"><%- icon('paperclip','size-4') %> <%= attachment.originalName %></a><% } %>
+    </article>
+    <% if (replies.length) { %>
+      <ol class="grid gap-3">
+        <% replies.forEach(r => { %>
+          <li class="card p-5 <%= r.isNote ? '!bg-surface-2/60 border-dashed' : '' %>">
+            <p class="text-xs text-muted"><strong class="text-ink"><%= r.user || 'Admin' %></strong> · <%= r.isNote ? 'internal note' : 'replied by email' %> · <%= timeAgo(r.createdAt) %></p>
+            <p class="mt-2 whitespace-pre-line"><%= r.body %></p>
+          </li>
+        <% }) %>
+      </ol>
+    <% } %>
+    <form method="post" action="<%= A('/inbox/' + m.id + '/reply') %>" class="card grid gap-4 p-6">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field"><label class="label" for="body">Reply</label><textarea class="textarea" id="body" name="body" rows="6" required placeholder="Hi <%= m.name.split(' ')[0] %>, thanks for reaching out…"></textarea></div>
+      <div class="flex flex-wrap gap-2"><button class="btn btn-primary btn-sm" name="kind" value="reply"><%- icon('send','size-4') %> Send email reply</button><button class="btn btn-ghost btn-sm" name="kind" value="note"><%- icon('sticky-note','size-4') %> Save as internal note</button></div>
+    </form>
+  </div>
+  <aside class="grid content-start gap-6">
+    <dl class="card grid gap-3 p-5 text-sm">
+      <div><dt class="text-muted">Email</dt><dd><a class="text-ink underline" href="mailto:<%= m.email %>"><%= m.email %></a></dd></div>
+      <% if (m.phone) { %><div><dt class="text-muted">Phone</dt><dd class="text-ink"><%= m.phone %> · <a class="underline" href="<%= whatsappLink(m.phone) %>" target="_blank" rel="noopener">WhatsApp</a></dd></div><% } %>
+      <% if (m.company) { %><div><dt class="text-muted">Company</dt><dd class="text-ink"><%= m.company %></dd></div><% } %>
+      <% if (m.budget) { %><div><dt class="text-muted">Budget</dt><dd class="text-ink"><%= m.budget %></dd></div><% } %>
+      <% if (m.timeline) { %><div><dt class="text-muted">Timeline</dt><dd class="text-ink"><%= m.timeline %></dd></div><% } %>
+      <div><dt class="text-muted">Sent from</dt><dd class="text-ink"><%= m.page || '/contact' %><%= m.referrer ? ' · via ' + domainOf(m.referrer) : '' %><%= m.country ? ' · ' + m.country : '' %></dd></div>
+    </dl>
+    <form method="post" action="<%= A('/inbox/' + m.id + '/status') %>" class="card flex flex-wrap gap-2 p-5">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button name="status" value="archived" class="btn btn-outline btn-xs"><%- icon('archive','size-3.5') %> Archive</button>
+      <button name="status" value="read" class="btn btn-ghost btn-xs">Mark unreplied</button>
+      <button name="status" value="spam" class="btn btn-ghost btn-xs text-danger" data-confirm="Mark this message as spam?">Spam</button>
+    </form>
+  </aside>
+</div>

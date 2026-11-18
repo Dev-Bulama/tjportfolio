@@ -354,3 +354,8 @@
 
 summary::-webkit-details-marker { display: none; }
 summary { list-style: none; }
+
+/* Font pairing presets (Settings → Branding) */
+:root[data-font="classic"] body { font-family: var(--font-display); }
+:root[data-font="modern"] h1, :root[data-font="modern"] h2, :root[data-font="modern"] h3, :root[data-font="modern"] h4,
+:root[data-font="modern"] .stat-num, :root[data-font="modern"] .pull-quote { font-family: var(--font-sans); letter-spacing: -0.03em; font-weight: 600; }

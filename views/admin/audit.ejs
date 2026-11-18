@@ -1,0 +1,24 @@
+<%- include('../partials/admin/page-head', { title: 'Audit log', subtitle: 'Who did what, and when. IP addresses are stored only as one-way hashes.' }) %>
+<form method="get" class="mb-4 flex flex-wrap items-center gap-2">
+  <input class="input max-w-xs !py-2 text-sm" name="q" value="<%= f.q %>" placeholder="Search summary or ID…" aria-label="Search">
+  <select class="select !w-auto !py-2 text-sm" name="user" aria-label="User" data-autosubmit><option value="">Any user</option><% users.forEach(u => { %><option value="<%= u.id %>" <%= f.user === String(u.id) ? 'selected' : '' %>><%= u.name %></option><% }) %></select>
+  <select class="select !w-auto !py-2 text-sm" name="resource" aria-label="Resource" data-autosubmit><option value="">Any resource</option><% resources.forEach(r => { %><option <%= f.resource === r ? 'selected' : '' %>><%= r %></option><% }) %></select>
+  <select class="select !w-auto !py-2 text-sm" name="action" aria-label="Action" data-autosubmit><option value="">Any action</option><% actions.forEach(a => { %><option <%= f.action === a ? 'selected' : '' %>><%= a %></option><% }) %></select>
+  <button class="btn btn-outline btn-sm">Filter</button>
+</form>
+<div class="card divide-y divide-line">
+  <% if (!rows.length) { %><p class="p-8 text-center text-muted">No entries match.</p><% } %>
+  <% rows.forEach(r => { %>
+    <details class="group px-4 py-3">
+      <summary class="flex cursor-pointer flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
+        <span class="w-36 shrink-0 text-xs text-muted"><%= formatDateTime(r.createdAt) %></span>
+        <span class="font-semibold text-ink"><%= r.userName || 'System' %></span>
+        <span class="chip !py-0.5"><%= r.action %></span><span class="text-muted"><%= r.resource %><%= r.resourceId ? ' #' + r.resourceId : '' %></span>
+        <span class="min-w-0 flex-1 truncate"><%= r.summary || '' %></span>
+        <% if (r.diff) { %><span class="text-xs text-gold-ink"><%= Object.keys(r.diff).length %> field(s) changed</span><% } %>
+      </summary>
+      <% if (r.diff) { %><div class="mt-3 overflow-x-auto"><table class="table text-xs"><thead><tr><th>Field</th><th>Before</th><th>After</th></tr></thead><tbody><% Object.entries(r.diff).forEach(([k, v]) => { %><tr><td class="font-mono"><%= k %></td><td class="max-w-sm break-words text-danger"><%= v.before === null ? '—' : typeof v.before === 'object' ? JSON.stringify(v.before) : v.before %></td><td class="max-w-sm break-words text-teal"><%= v.after === null ? '—' : typeof v.after === 'object' ? JSON.stringify(v.after) : v.after %></td></tr><% }) %></tbody></table></div><% } %>
+    </details>
+  <% }) %>
+</div>
+<% if (pages > 1) { %><nav class="mt-4 flex justify-center gap-2" aria-label="Pagination"><% if (page > 1) { %><a class="btn btn-ghost btn-sm" href="<%= qs(f, { page: page - 1 }) %>">← Newer</a><% } %><span class="self-center text-sm">Page <%= page %> / <%= pages %></span><% if (page < pages) { %><a class="btn btn-ghost btn-sm" href="<%= qs(f, { page: page + 1 }) %>">Older →</a><% } %></nav><% } %>

@@ -4,6 +4,8 @@ import { accountRouter } from "./account.js";
 import { contentRouter } from "./content.js";
 import { mediaAdminRouter } from "./media.js";
 import { dashboardRouter } from "./dashboard.js";
+import { inboxRouter } from "./inbox.js";
+import { siteAdminRouter } from "./site.js";
 import { adminContext } from "./context.js";
 import { readFlash, requireAuth } from "./mw.js";
 
@@ -22,3 +24,5 @@ adminRouter.use(dashboardRouter);
 adminRouter.use(accountRouter);
 adminRouter.use(contentRouter);
 adminRouter.use(mediaAdminRouter);
+adminRouter.use(inboxRouter);
+adminRouter.use(siteAdminRouter);

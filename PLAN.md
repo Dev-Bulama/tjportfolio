@@ -63,11 +63,11 @@ API: `/api/health`, `/api/collect`, `/api/cron`, `/media/*`, `/cv/:id`, `/cv/gen
 - [x] **0. Plan** — PLAN.md, CLAUDE.md
 - [x] **1. Foundation** — Express + TS strict, Tailwind v4, design tokens, fonts, env (zod), Drizzle/mysql2, docker-compose, ESLint/Prettier, client build
 - [x] **2. Data layer** — schema, migrations, boot migrator with GET_LOCK, idempotent seed
-- [ ] **3. Auth & admin shell** — setup wizard, login, TOTP + recovery, reset, sessions, roles, lockout, audit, admin layout, ⌘K palette
-- [ ] **4. Content modules** — resource engine + all modules, settings, review requests, CV files
-- [ ] **5. Media & storage** — drivers, upload pipeline, library, usages, health card
-- [ ] **6. Public site** — all routes, homepage builder, page blocks, menus, SEO/OG/JSON-LD/sitemap/RSS
-- [ ] **7. Forms & comms** — contact, tickets, status, newsletter, registrations, reviews, inbox, emails, jobs
-- [ ] **8. Analytics & hardening** — beacon, collect, roll-ups, dashboard, CSP, cron, export/import
+- [x] **3. Auth & admin shell** — setup wizard, login, TOTP + recovery, reset, sessions, roles, lockout, audit, admin layout, ⌘K palette
+- [x] **4. Content modules** — resource engine + all modules, settings, review requests, CV files
+- [x] **5. Media & storage** — drivers, upload pipeline, library, usages, health card
+- [x] **6. Public site** — all routes, homepage builder, page blocks, menus, SEO/OG/JSON-LD/sitemap/RSS
+- [x] **7. Forms & comms** — contact, tickets, status, newsletter, registrations, reviews, inbox, emails, jobs
+- [x] **8. Analytics & hardening** — beacon, collect, roll-ups, dashboard, CSP, cron, export/import
 - [ ] **9. Polish & QA** — responsive/dark/motion, empty states, Lighthouse, axe, tests
 - [ ] **10. Docs** — README, DEPLOY, ADMIN-GUIDE, .env.example, scripts/make-zip.sh
