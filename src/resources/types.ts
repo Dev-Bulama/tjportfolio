@@ -2,7 +2,7 @@ import type { MySqlTable } from "drizzle-orm/mysql-core";
 import type { CATEGORY_TYPES } from "../db/schema/index.js";
 
 export type Width = "full" | "half" | "third";
-type Base = { name: string; label: string; help?: string; required?: boolean; width?: Width; section?: string; placeholder?: string; readonly?: boolean };
+type Base = { name: string; label: string; help?: string; required?: boolean; notNull?: boolean; width?: Width; section?: string; placeholder?: string; readonly?: boolean };
 
 export type SubField = { name: string; label: string; type: "text" | "textarea" | "url" | "number"; required?: boolean; placeholder?: string };
 

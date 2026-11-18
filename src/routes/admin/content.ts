@@ -57,6 +57,8 @@ contentRouter.get("/content/:resource", ah(async (req, res) => {
 // ── Editor ────────────────────────────────────────────────────────────────────────────────────────
 async function renderEditor(req: Request, res: Response, def: ResourceDef, id: number | null, values: Record<string, unknown>, errors: Record<string, string> = {}, status = 200) {
   const options = await E.fieldOptions(def);
+  const notNull = E.notNullColumns(def);
+  def = { ...def, fields: def.fields.map((f) => (f.type === "select" && notNull.has(f.name) ? { ...f, notNull: true } : f)) };
   const media = await mediaMap(E.mediaIdsOf(def, values));
   const history = id ? await E.recordAudit(def, id) : [];
   const readOnly = !allowed(req, id ? "update" : "create", "content");

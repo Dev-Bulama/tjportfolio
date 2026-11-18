@@ -62,7 +62,7 @@
   --navy: #0f2a47;
   --navy-ink: #f3efe6;
   --gold: #b8925a;
-  --gold-ink: #8a6a3a; /* AA-safe gold for small text on ivory/white (4.6:1) */
+  --gold-ink: #7d5f33; /* AA-safe gold for small text on ivory, white and tinted sections (≥5.2:1) */
   --teal: #1f6f6b;
   --danger: #9b2c2c;
   --focus: #b8925a;

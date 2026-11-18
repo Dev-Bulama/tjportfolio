@@ -56,6 +56,11 @@ export async function listRows(def: ResourceDef, q: ListQuery): Promise<{ rows: 
   return { rows, total, page, pages, counts };
 }
 
+/** Column names that are NOT NULL (the editor hides the empty option for these selects). */
+export function notNullColumns(def: ResourceDef): Set<string> {
+  return new Set(Object.entries(cols(def.table)).filter(([, c]) => c.notNull).map(([k]) => k));
+}
+
 // ── Options for selects ───────────────────────────────────────────────────────────────────────────
 export type Options = Record<string, Array<[number | string, string]>>;
 
@@ -265,6 +270,8 @@ export function validate(def: ResourceDef, body: Row): { main: Row; extra: Row; 
         req(v !== "");
         main[f.name] = v === "" ? null : f.name === "rating" ? Number(v) : v;
         if (main[f.name] === null && def.defaults?.[f.name] !== undefined) main[f.name] = def.defaults[f.name];
+        // NOT NULL enum columns never receive NULL: fall back to the first option.
+        if (main[f.name] === null && c[f.name]?.notNull) main[f.name] = f.name === "rating" ? Number(f.options[0]![0]) : f.options[0]![0];
         break;
       }
       case "category":

@@ -38,7 +38,7 @@ export const RESOURCES: Record<string, ResourceDef> = {
       f.title(),
       f.slug(),
       { name: "categoryId", label: "Category", type: "category", categoryType: "project", width: "half" },
-      { name: "projectStatus", label: "Project status", type: "select", options: opt(["completed", "ongoing", "concept"]), width: "half" },
+      { name: "projectStatus", label: "Project status", type: "select", required: true, options: opt(["completed", "ongoing", "concept"]), width: "half" },
       f.summary("Summary", "One or two sentences shown on cards and in search results."),
       { name: "body", label: "Case study (problem → approach → solution → results)", type: "richtext" },
       { name: "metrics", label: "Key metrics", type: "children", table: s.projectMetrics, fk: "projectId", itemLabel: "metric", subfields: [{ name: "label", label: "Label", type: "text", required: true, placeholder: "Checkout time" }, { name: "value", label: "Value", type: "text", required: true, placeholder: "-38%" }] },
