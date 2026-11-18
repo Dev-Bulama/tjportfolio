@@ -76,5 +76,5 @@ How to run the site day to day: [ADMIN-GUIDE.md](ADMIN-GUIDE.md).
 - `npm run lint`, `npm run typecheck`, `npm test` (53 tests), `npm run e2e` (20 tests incl. axe on 10 pages + dark mode) all pass.
 - Lighthouse (mobile, simulated slow 4G) on Home, Work, a case study, Contact, a training and a service page:
   Performance 99–100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.5–2.0 s; CLS 0.
-- `npm audit --omit=dev`: no high or critical issues (one moderate advisory in a library bundled by `satori`,
+- `npm audit --omit=dev`: no high or critical issues (one moderate advisory, reported for both `fflate` and its parent `satori`,
   which only renders our own OG images and never unzips untrusted input).
