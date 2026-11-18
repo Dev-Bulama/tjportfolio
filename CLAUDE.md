@@ -13,7 +13,8 @@ Tiptap core, sharp, Nodemailer + EJS email templates, Chart.js, SortableJS, PDFK
 - `npm run lint` / `npm run typecheck` / `npm run test` / `npm run build` — run all four after every change set
 - `npm run db:generate` — create a migration after editing `src/db/schema/*`
 - `npm run db:migrate` / `npm run db:seed` — local DB setup (also run automatically: migrations on boot, seed from /setup)
-- `npm run e2e` — Playwright smoke tests (`--trace off` unless debugging)
+- `npm run e2e` — Playwright smoke + axe suite on port 3100 against `tjportfolio_e2e` (`--trace off` unless debugging)
+- Integration tests need MySQL (`tjportfolio_test`); they skip themselves if it's unreachable.
 
 ## Conventions
 - `src/client/*` is browser code (bundled by esbuild); it must never import from `src/db`, `src/lib/auth` or `src/server`.
@@ -35,3 +36,5 @@ Tiptap core, sharp, Nodemailer + EJS email templates, Chart.js, SortableJS, PDFK
 - App dir is replaced on redeploy → uploads live in `UPLOAD_DIR` (outside the app) or S3/R2.
 - No SSH assumed → migrations run on boot (`src/db/migrate.ts` called from `src/server.ts`, guarded by `GET_LOCK`).
 - Keep deps lean. Entry point `dist/server.js`; `PORT` comes from the host.
+- Anything the build needs must be in `dependencies` (the host may install with `--omit=dev`).
+- Deployment steps: `DEPLOY.md`. Owner-facing guide: `ADMIN-GUIDE.md`.

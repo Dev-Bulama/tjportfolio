@@ -69,5 +69,5 @@ API: `/api/health`, `/api/collect`, `/api/cron`, `/media/*`, `/cv/:id`, `/cv/gen
 - [x] **6. Public site** — all routes, homepage builder, page blocks, menus, SEO/OG/JSON-LD/sitemap/RSS
 - [x] **7. Forms & comms** — contact, tickets, status, newsletter, registrations, reviews, inbox, emails, jobs
 - [x] **8. Analytics & hardening** — beacon, collect, roll-ups, dashboard, CSP, cron, export/import
-- [ ] **9. Polish & QA** — responsive/dark/motion, empty states, Lighthouse, axe, tests
-- [ ] **10. Docs** — README, DEPLOY, ADMIN-GUIDE, .env.example, scripts/make-zip.sh
+- [x] **9. Polish & QA** — responsive/dark/motion, empty states, Lighthouse, axe, tests
+- [x] **10. Docs** — README, DEPLOY, ADMIN-GUIDE, .env.example, scripts/make-zip.sh
