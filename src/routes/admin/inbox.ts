@@ -19,7 +19,7 @@ export const inboxRouter = Router();
 const csv = (res: Response, name: string, body: string) => {
   res.setHeader("Content-Type", "text/csv; charset=utf-8");
   res.setHeader("Content-Disposition", `attachment; filename="${name}-${new Date().toISOString().slice(0, 10)}.csv"`);
-  res.send(`﻿${body}`);
+  res.send(`\uFEFF${body}`);
 };
 const like_ = (q: string) => `%${q.replace(/[%_\\]/g, "\\$&").slice(0, 80)}%`;
 

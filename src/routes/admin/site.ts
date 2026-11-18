@@ -186,12 +186,15 @@ siteAdminRouter.post("/menus/:key", ah(async (req, res) => {
   assertCan(req, "update", "content");
   const menu = (await db.select().from(s.menus).where(eq(s.menus.key, String(req.params.key))))[0];
   if (!menu) return res.redirect(adminUrl("/menus"));
-  let items: Array<{ label: string; href: string; newTab: boolean; visible: boolean; child: boolean }> = [];
-  try {
-    items = JSON.parse(String(req.body.items ?? "[]"));
-  } catch {
-    items = [];
-  }
+  type MenuInput = { label: string; href: string; newTab: boolean; visible: boolean; child: boolean };
+  const items: MenuInput[] = (() => {
+    try {
+      const v = JSON.parse(String(req.body.items ?? "[]")) as unknown;
+      return Array.isArray(v) ? (v as MenuInput[]) : [];
+    } catch {
+      return [];
+    }
+  })();
   const clean = items
     .slice(0, 50)
     .map((i) => ({ label: str(i.label, 80), href: str(i.href, 500), newTab: Boolean(i.newTab), visible: i.visible !== false, child: Boolean(i.child) }))
@@ -263,7 +266,7 @@ siteAdminRouter.get("/analytics", ah(async (req, res) => {
   if (req.query.export === "csv") {
     res.setHeader("Content-Type", "text/csv; charset=utf-8");
     res.setHeader("Content-Disposition", `attachment; filename="analytics-${from.toISOString().slice(0, 10)}-${to.toISOString().slice(0, 10)}.csv"`);
-    return res.send(`﻿${toCsv(seriesRows.map((r) => ({ ...r, day: String(r.day).slice(0, 10) })), [["day", "Day"], ["visitors", "Visitors"], ["views", "Page views"]])}`);
+    return res.send(`\uFEFF${toCsv(seriesRows.map((r) => ({ ...r, day: String(r.day).slice(0, 10) })), [["day", "Day"], ["visitors", "Visitors"], ["views", "Page views"]])}`);
   }
   const ev = Object.fromEntries(events.map((e) => [e.key, { n: Number(e.n), uniq: Number(e.uniq) }]));
   const visitors = Number(totals[0]?.visitors ?? 0);
