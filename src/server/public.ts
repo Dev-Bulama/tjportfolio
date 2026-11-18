@@ -8,7 +8,8 @@ import { db } from "../db/index.js";
 import * as s from "../db/schema/index.js";
 import { cached } from "../lib/cache.js";
 import { isPlaceholder, pub, safeUrl } from "../lib/util.js";
-import { sanitizeRich } from "../lib/sanitize.js";
+import { sanitizeRich as sanitizeRaw, stripPlaceholders } from "../lib/sanitize.js";
+const sanitizeRich = (h: string | null | undefined): string => stripPlaceholders(sanitizeRaw(h));
 import { mediaMap, type Img } from "./media.js";
 
 type Live = { status: MySqlColumn; publishedAt: MySqlColumn; deletedAt: MySqlColumn; isSample: MySqlColumn };

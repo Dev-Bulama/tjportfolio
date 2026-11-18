@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" class="no-js" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title><%= locals.title ? title + ' · ' : '' %>Admin · Tijani Bulama</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="<%= asset('/assets/app.css') %>">
+<script nonce="<%= nonce %>">(function(){var d=document.documentElement;d.classList.remove('no-js');var t=null;try{t=localStorage.getItem('theme')}catch(e){}if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}d.dataset.theme=t;try{if(localStorage.getItem('sidebar')==='collapsed')d.dataset.sidebar='collapsed'}catch(e){}})();</script>
+</head>
+<body class="bg-bg text-body" data-admin-base="<%= A('') %>" data-csrf="<%= csrfToken %>">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="flex min-h-dvh">
+  <%- include('../partials/admin/sidebar') %>
+  <div class="flex min-w-0 flex-1 flex-col">
+    <header class="sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-bg/90 px-4 py-2.5 backdrop-blur md:px-6">
+      <button type="button" class="btn btn-ghost btn-icon lg:hidden" data-sidebar-open aria-label="Open navigation"><%- icon('menu') %></button>
+      <button type="button" class="btn btn-ghost btn-icon hidden lg:inline-flex" data-sidebar-collapse aria-label="Collapse sidebar"><%- icon('panel-left') %></button>
+      <button type="button" class="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-left text-sm text-muted hover:border-gold sm:max-w-md" data-palette-open aria-label="Search and run commands">
+        <%- icon('search', 'size-4') %><span class="truncate">Search or jump to…</span><kbd class="ml-auto hidden rounded border border-line px-1.5 font-mono text-[0.7rem] sm:inline">⌘K</kbd>
+      </button>
+      <div class="ml-auto flex items-center gap-1">
+        <a href="/" target="_blank" rel="noopener" class="btn btn-ghost btn-sm hidden sm:inline-flex"><%- icon('external-link', 'size-4') %> View site</a>
+        <a href="<%= A('/notifications') %>" class="btn btn-ghost btn-icon relative" aria-label="Notifications<%= badges.total ? ' (' + badges.total + ' new)' : '' %>">
+          <%- icon('bell', 'size-[1.15rem]') %>
+          <% if (badges.total) { %><span class="absolute right-1 top-1 grid min-w-4 place-items-center rounded-full bg-danger px-1 text-[0.65rem] font-bold leading-4 text-white"><%= badges.total > 99 ? '99+' : badges.total %></span><% } %>
+        </a>
+        <button type="button" class="btn btn-ghost btn-icon" data-theme-toggle aria-label="Toggle dark mode"><span class="dark:hidden"><%- icon('moon', 'size-[1.1rem]') %></span><span class="hidden dark:inline"><%- icon('sun', 'size-[1.1rem]') %></span></button>
+        <details class="relative" data-menu>
+          <summary class="btn btn-ghost btn-sm list-none gap-2 [&::-webkit-details-marker]:hidden" aria-label="Account menu">
+            <span class="grid size-7 place-items-center rounded-full bg-navy text-[0.7rem] font-semibold text-navy-ink"><%= initials(user.name) %></span>
+            <span class="hidden text-sm md:inline"><%= user.name %></span>
+          </summary>
+          <div class="absolute right-0 z-50 mt-2 w-60 rounded-xl border border-line bg-surface p-1.5 shadow-xl">
+            <p class="px-3 py-2 text-xs text-muted"><%= user.email %><br><span class="capitalize"><%= user.role %></span></p>
+            <a class="block rounded-lg px-3 py-2 text-sm hover:bg-surface-2" href="<%= A('/account') %>">Account & security</a>
+            <form method="post" action="<%= A('/logout') %>"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="block w-full rounded-lg px-3 py-2 text-left text-sm text-danger hover:bg-surface-2">Sign out</button></form>
+          </div>
+        </details>
+      </div>
+    </header>
+    <% if (locals.banners && banners.length) { %>
+      <div class="space-y-2 px-4 pt-4 md:px-6">
+        <% for (const b of banners) { %>
+          <div class="alert <%= b.type === 'danger' ? 'alert-danger' : '' %> flex flex-wrap items-center gap-3 text-sm" role="status">
+            <%- icon(b.type === 'danger' ? 'triangle-alert' : 'info', 'size-4 ' + (b.type === 'danger' ? 'text-danger' : 'text-gold-ink')) %>
+            <span class="flex-1"><%- b.html %></span>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+    <main id="main" tabindex="-1" class="flex-1 px-4 py-6 outline-none md:px-6 md:py-8">
+      <%- body %>
+    </main>
+  </div>
+</div>
+<%- include('../partials/admin/palette') %>
+<div class="pointer-events-none fixed bottom-4 right-4 z-[60] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-2" data-toasts aria-live="polite" aria-atomic="false">
+  <% if (locals.flash) { %>
+    <div class="toast pointer-events-auto rounded-xl border border-line bg-surface px-4 py-3 text-sm shadow-xl" data-toast data-type="<%= flash.type %>">
+      <span class="mr-2 inline-block size-2 rounded-full <%= flash.type === 'error' ? 'bg-danger' : flash.type === 'success' ? 'bg-teal' : 'bg-gold' %>"></span><%= flash.msg %>
+    </div>
+  <% } %>
+</div>
+<script type="module" src="<%= asset('/assets/admin.js') %>" nonce="<%= nonce %>"></script>
+</body>
+</html>

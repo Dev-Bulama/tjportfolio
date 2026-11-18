@@ -1,0 +1,103 @@
+<%
+  const w = f.width === 'half' ? 'md:col-span-3' : f.width === 'third' ? 'md:col-span-2' : 'md:col-span-6';
+  const v = values[f.name];
+  const err = errors[f.name];
+  const fid = 'f-' + f.name;
+  const describedBy = [f.help ? fid + '-help' : '', err ? fid + '-err' : ''].filter(Boolean).join(' ');
+  const aria = (err ? 'aria-invalid="true" ' : '') + (describedBy ? 'aria-describedby="' + describedBy + '"' : '');
+  const thumb = (id) => { const m = id ? media.get(Number(id)) : null; return m ? { id: m.id, url: isImage(m) ? mediaUrl(m, 320) : '', name: m.originalName, mime: m.mime, alt: m.alt || '' } : null; };
+%>
+<div class="field <%= w %>" id="field-<%= f.name %>">
+  <% if (f.type === 'boolean') { %>
+    <label class="flex items-start gap-2.5 pt-1 text-sm"><input type="hidden" name="<%= f.name %>" value="0"><input type="checkbox" class="checkbox mt-0.5" id="<%= fid %>" name="<%= f.name %>" value="1" <%= v ? 'checked' : '' %> <%- aria %>><span><span class="font-semibold text-ink"><%= f.label %></span><% if (f.help) { %><br><span class="help" id="<%= fid %>-help"><%= f.help %></span><% } %></span></label>
+  <% } else { %>
+    <label class="label" for="<%= fid %>"><%= f.label %><% if (f.required) { %> <span class="text-danger" aria-hidden="true">*</span><% } %></label>
+    <% if (['text','email','url','color'].includes(f.type)) { %>
+      <input class="input" id="<%= fid %>" name="<%= f.name %>" type="<%= f.type === 'url' ? 'text' : f.type === 'email' ? 'email' : 'text' %>" value="<%= v ?? '' %>" <%= f.required ? 'required' : '' %> <%= f.readonly ? 'readonly' : '' %> maxlength="<%= f.max || 500 %>" placeholder="<%= f.placeholder || (f.type === 'url' ? 'https://' : '') %>" <%- aria %> <%= f.name === def.titleField ? 'data-title-input' : '' %>>
+    <% } else if (f.type === 'textarea') { %>
+      <textarea class="textarea" id="<%= fid %>" name="<%= f.name %>" rows="<%= f.rows || 4 %>" <%= f.required ? 'required' : '' %> maxlength="<%= f.max || 20000 %>" placeholder="<%= f.placeholder || '' %>" <%- aria %> <%= f.name === def.titleField ? 'data-title-input' : '' %>><%= v ?? '' %></textarea>
+    <% } else if (f.type === 'number') { %>
+      <input class="input" id="<%= fid %>" name="<%= f.name %>" type="number" value="<%= v ?? '' %>" <%= f.min !== undefined ? 'min=' + f.min : '' %> <%= f.max !== undefined ? 'max=' + f.max : '' %> step="<%= f.step || 1 %>" <%- aria %>>
+    <% } else if (f.type === 'date') { %>
+      <input class="input" id="<%= fid %>" name="<%= f.name %>" type="date" value="<%= v ? String(v).slice(0,10) : '' %>" <%- aria %>>
+    <% } else if (f.type === 'datetime') { %>
+      <input class="input" id="<%= fid %>" name="<%= f.name %>" type="datetime-local" value="<%= v ? String(v).slice(0,16) : '' %>" <%- aria %>>
+    <% } else if (f.type === 'slug') { %>
+      <div class="flex items-center rounded-[10px] border border-line bg-surface-2 focus-within:border-gold"><span class="pl-3 font-mono text-xs text-muted"><%= def.publicUrl ? def.publicUrl({ slug: '' }).replace(/[^/]*$/, '') : '/' %></span><input class="input !border-0 !bg-transparent font-mono !text-sm" id="<%= fid %>" name="<%= f.name %>" value="<%= v ?? '' %>" data-slug data-slug-source="<%= f.source %>" <%= f.allowSlash ? 'data-allow-slash' : '' %> <%= v ? 'data-touched' : '' %> <%- aria %>></div>
+    <% } else if (f.type === 'select') { %>
+      <select class="select" id="<%= fid %>" name="<%= f.name %>" <%- aria %>>
+        <% if (!f.required) { %><option value="">—</option><% } %>
+        <% for (const [ov, ol] of f.options) { %><option value="<%= ov %>" <%= String(v ?? '') === String(ov) ? 'selected' : '' %>><%= ol %></option><% } %>
+      </select>
+    <% } else if (f.type === 'category' || f.type === 'relation') { %>
+      <% const opts = f.type === 'category' ? (options['cat:' + f.categoryType] || []) : (options[f.name] || []); %>
+      <select class="select" id="<%= fid %>" name="<%= f.name %>" <%- aria %>>
+        <option value="">— None —</option>
+        <% for (const [ov, ol] of opts) { %><option value="<%= ov %>" <%= Number(v) === Number(ov) ? 'selected' : '' %>><%= ol %></option><% } %>
+      </select>
+    <% } else if (f.type === 'icon') { %>
+      <div class="flex items-center gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-full border border-line text-gold-ink" data-icon-preview><%- icon(v || 'sparkles', 'size-5') %></span>
+      <select class="select" id="<%= fid %>" name="<%= f.name %>" data-icon-select <%- aria %>>
+        <option value="">— None —</option>
+        <% for (const ic of icons) { %><option value="<%= ic %>" <%= v === ic ? 'selected' : '' %>><%= ic %></option><% } %>
+        <% if (v && !icons.includes(v)) { %><option value="<%= v %>" selected><%= v %></option><% } %>
+      </select></div>
+      <template data-icon-templates><% for (const ic of icons) { %><span data-icon="<%= ic %>"><%- icon(ic, 'size-5') %></span><% } %></template>
+    <% } else if (f.type === 'richtext') { %>
+      <div class="rich-editor rounded-[10px] border border-line bg-surface focus-within:border-gold" data-richtext data-target="<%= f.name %>">
+        <textarea class="textarea !rounded-[10px] !border-0" id="<%= fid %>" name="<%= f.name %>Html" rows="12" data-richtext-html <%- aria %>><%= values[f.name + 'Html'] || '' %></textarea>
+        <input type="hidden" name="<%= f.name %>Json" value="<%= values[f.name + 'Json'] ? JSON.stringify(values[f.name + 'Json']) : '' %>" data-richtext-json>
+      </div>
+    <% } else if (f.type === 'image' || f.type === 'file') { %>
+      <% const t = thumb(v); %>
+      <div class="flex items-center gap-4 rounded-[10px] border border-dashed border-line p-3" data-media-field data-accept="<%= f.accept %>">
+        <input type="hidden" id="<%= fid %>" name="<%= f.name %>" value="<%= v ?? '' %>" data-media-input>
+        <div class="grid size-20 shrink-0 place-items-center overflow-hidden rounded-lg bg-surface-2 text-muted" data-media-thumb>
+          <% if (t && t.url) { %><img src="<%= t.url %>" alt="" class="size-full object-cover"><% } else if (t) { %><%- icon('file-text','size-7') %><% } else { %><%- icon(f.accept === 'pdf' ? 'file-up' : 'image-plus','size-7') %><% } %>
+        </div>
+        <div class="min-w-0 flex-1 text-sm">
+          <p class="truncate text-ink" data-media-name><%= t ? t.name : 'No file selected' %></p>
+          <div class="mt-2 flex gap-2"><button type="button" class="btn btn-outline btn-xs" data-media-choose><%= t ? 'Replace' : 'Choose' %></button><button type="button" class="btn btn-ghost btn-xs" data-media-clear <%= t ? '' : 'hidden' %>>Remove</button></div>
+        </div>
+      </div>
+    <% } else if (f.type === 'list' || f.type === 'steps' || f.type === 'children') { %>
+      <% const sub = f.type === 'list' ? [{ name: 'value', label: f.itemLabel || 'Item', type: 'text' }] : f.type === 'steps' ? [{ name: 'title', label: 'Step title', type: 'text', required: true }, { name: 'description', label: 'Description', type: 'textarea' }] : f.subfields; %>
+      <% const items = f.type === 'list' ? (v || []).map(x => ({ value: x })) : (v || []).map(x => Object.fromEntries(sub.map(sf => [sf.name, x[sf.name] ?? '']))); %>
+      <div data-repeater data-mode="<%= f.type %>" data-item-label="<%= f.itemLabel || (f.type === 'steps' ? 'step' : 'item') %>">
+        <input type="hidden" name="<%= f.name %>" value="<%= JSON.stringify(f.type === 'list' ? (v || []) : items) %>" data-repeater-input>
+        <script type="application/json" data-repeater-schema nonce="<%= nonce %>"><%- json({ fields: sub, items }) %></script>
+        <ol class="grid gap-3" data-repeater-list></ol>
+        <button type="button" class="btn btn-outline btn-xs mt-3" data-repeater-add><%- icon('plus','size-3.5') %> Add <%= f.itemLabel || (f.type === 'steps' ? 'step' : 'item') %></button>
+      </div>
+    <% } else if (f.type === 'ids' || f.type === 'join') { %>
+      <% const opts = options[f.name] || []; const sel = (v || []).map(Number); %>
+      <div class="rounded-[10px] border border-line" data-checklist>
+        <input type="search" class="input !rounded-b-none !border-0 !border-b !border-line text-sm" placeholder="Filter…" aria-label="Filter <%= f.label %>" data-checklist-filter>
+        <ul class="max-h-56 overflow-y-auto p-2 text-sm">
+          <% for (const [ov, ol] of opts) { %><li><label class="flex items-center gap-2 rounded px-2 py-1 hover:bg-surface-2"><input type="checkbox" class="checkbox" name="<%= f.name %>" value="<%= ov %>" <%= sel.includes(Number(ov)) ? 'checked' : '' %>><span><%= ol %></span></label></li><% } %>
+          <% if (!opts.length) { %><li class="px-2 py-1 text-muted">Nothing to choose from yet.</li><% } %>
+        </ul>
+      </div>
+    <% } else if (f.type === 'tags') { %>
+      <input class="input" id="<%= fid %>" name="<%= f.name %>" value="<%= v ?? '' %>" placeholder="ai, automation, africa" <%- aria %>>
+    <% } else if (f.type === 'gallery' || f.type === 'albumImages') { %>
+      <% const items = (v || []).map(x => { const m = media.get(Number(x.mediaId)); return { mediaId: Number(x.mediaId), caption: x.caption || '', alt: x.alt || (m && m.alt) || '', credit: x.credit || '', url: m ? mediaUrl(m, 320) : '', name: m ? m.originalName : 'Missing file' }; }); %>
+      <div data-gallery data-mode="<%= f.type %>">
+        <input type="hidden" name="<%= f.name %>" value="<%= JSON.stringify(items.map(({url, name, ...r}) => r)) %>" data-gallery-input>
+        <script type="application/json" data-gallery-items nonce="<%= nonce %>"><%- json(items) %></script>
+        <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" data-gallery-list></ul>
+        <div class="mt-3 flex flex-wrap gap-2"><button type="button" class="btn btn-outline btn-xs" data-gallery-add><%- icon('images','size-3.5') %> Add photos</button><span class="help self-center">Drag to reorder.</span></div>
+      </div>
+    <% } else if (f.type === 'blocks') { %>
+      <% const bmedia = {}; (v || []).forEach(b => { const id2 = b.data && b.data.imageId; const m = id2 ? media.get(Number(id2)) : null; if (m) bmedia[id2] = { url: mediaUrl(m, 320), name: m.originalName }; }); %>
+      <div data-blocks>
+        <input type="hidden" name="<%= f.name %>" value="<%= JSON.stringify(v || []) %>" data-blocks-input>
+        <script type="application/json" data-blocks-media nonce="<%= nonce %>"><%- json(bmedia) %></script>
+        <ol class="grid gap-4" data-blocks-list></ol>
+        <div class="mt-4 flex flex-wrap gap-2" data-blocks-add></div>
+      </div>
+    <% } %>
+  <% } %>
+  <% if (f.help && f.type !== 'boolean') { %><p class="help" id="<%= fid %>-help"><%= f.help %></p><% } %>
+  <% if (err) { %><p class="error-text" id="<%= fid %>-err"><%= err %></p><% } %>
+</div>

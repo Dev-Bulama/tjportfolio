@@ -1,0 +1,57 @@
+<%- include('../partials/admin/page-head', { title: 'Good ' + (new Date().getUTCHours() + 1 < 12 ? 'morning' : new Date().getUTCHours() + 1 < 17 ? 'afternoon' : 'evening') + ', ' + user.name.split(' ')[0] + '.', subtitle: 'Here is what is happening across the site.',
+  actions: `<a class="btn btn-outline btn-sm" href="${A('/content/projects/new')}">${icon('plus','size-4')} Project</a><a class="btn btn-outline btn-sm" href="${A('/content/trainings/new')}">${icon('plus','size-4')} Training</a><a class="btn btn-outline btn-sm" href="${A('/media')}">${icon('upload','size-4')} Upload</a><a class="btn btn-primary btn-sm" href="${A('/content/posts/new')}">${icon('pen-line','size-4')} Write post</a>` }) %>
+
+<% const kpis = [
+  ['Visitors today', kpi.today, 'users', A('/analytics?range=1')], ['Visitors · 7 days', kpi.d7, 'trending-up', A('/analytics?range=7')], ['Visitors · 30 days', kpi.d30, 'calendar', A('/analytics?range=30')], ['Page views · 30 days', kpi.views30, 'eye', A('/analytics?range=30')],
+  ['CV downloads', kpi.cvDownloads, 'download', A('/content/cvs')], ['New messages', kpi.newMessages, 'inbox', A('/inbox')], ['Open tickets', kpi.openTickets, 'life-buoy', A('/tickets')], ['Pending reviews', kpi.pendingReviews, 'quote', A('/content/testimonials?moderation=pending')] ]; %>
+<ul class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+  <% for (const [label, value, ic, href] of kpis) { %>
+    <li><a href="<%= href %>" class="card card-hover flex h-full flex-col p-5">
+      <span class="flex items-center justify-between text-sm text-muted"><%= label %><%- icon(ic,'size-4 text-gold-ink') %></span>
+      <span class="stat-num mt-3 text-[2rem] leading-none"><%= formatNumber(value) %></span>
+    </a></li>
+  <% } %>
+</ul>
+
+<div class="mt-6 grid gap-6 xl:grid-cols-3">
+  <section class="card p-5 xl:col-span-2" aria-labelledby="traffic-h">
+    <div class="flex items-center justify-between"><h2 id="traffic-h" class="font-display text-lg text-ink">Traffic · last 14 days</h2><a class="text-sm text-muted hover:underline" href="<%= A('/analytics') %>">Full analytics →</a></div>
+    <div class="mt-4 h-64"><canvas data-chart="line" aria-label="Visitors and page views over the last 14 days" role="img"></canvas></div>
+    <script type="application/json" data-chart-data nonce="<%= nonce %>"><%- json({ labels: series.map(r => String(r.day).slice(5, 10)), datasets: [{ label: 'Page views', data: series.map(r => Number(r.views)) }, { label: 'Visitors', data: series.map(r => Number(r.visitors)) }] }) %></script>
+    <% if (!series.length) { %><p class="-mt-40 mb-32 text-center text-sm text-muted">No visits recorded yet. Data appears as soon as people visit the site.</p><% } %>
+  </section>
+  <section class="card p-5" aria-labelledby="check-h">
+    <h2 id="check-h" class="font-display text-lg text-ink">Getting started</h2>
+    <ol class="mt-4 grid gap-2">
+      <% for (const c of checklist) { %>
+        <li><a href="<%= A(c.href) %>" class="flex items-start gap-3 rounded-lg p-2 text-sm hover:bg-surface-2">
+          <span class="mt-0.5 <%= c.done ? 'text-teal' : 'text-muted' %>"><%- icon(c.done ? 'circle-check' : 'circle', 'size-[1.1rem]') %></span>
+          <span><span class="<%= c.done ? 'text-muted line-through' : 'font-medium text-ink' %>"><%= c.label %></span><% if (!c.done && c.detail) { %><span class="block text-xs text-muted"><%= c.detail %></span><% } %></span>
+        </a></li>
+      <% } %>
+    </ol>
+  </section>
+  <section class="card p-5" aria-labelledby="pages-h">
+    <h2 id="pages-h" class="font-display text-lg text-ink">Top pages · 30 days</h2>
+    <% if (!topPages.length) { %><p class="mt-3 text-sm text-muted">No data yet.</p><% } else { %>
+    <ol class="mt-3 grid gap-2 text-sm"><% for (const p of topPages) { %><li class="flex justify-between gap-3"><span class="truncate text-ink"><%= p.path %></span><span class="tabular-nums text-muted"><%= p.views %></span></li><% } %></ol><% } %>
+  </section>
+  <section class="card p-5" aria-labelledby="refs-h">
+    <h2 id="refs-h" class="font-display text-lg text-ink">Top referrers · 30 days</h2>
+    <% if (!topRefs.length) { %><p class="mt-3 text-sm text-muted">No referrers yet.</p><% } else { %>
+    <ol class="mt-3 grid gap-2 text-sm"><% for (const r of topRefs) { %><li class="flex justify-between gap-3"><span class="truncate text-ink"><%= r.ref %></span><span class="tabular-nums text-muted"><%= r.views %></span></li><% } %></ol><% } %>
+  </section>
+  <section class="card p-5" aria-labelledby="sys-h">
+    <h2 id="sys-h" class="font-display text-lg text-ink">Storage health</h2>
+    <p class="mt-3 flex items-start gap-2 text-sm"><span class="<%= storage && storage.ok ? 'text-teal' : 'text-danger' %>"><%- icon(storage && storage.ok ? 'circle-check' : 'triangle-alert','size-4') %></span><span><strong class="text-ink"><%= storage ? storage.driver : 'unknown' %></strong> — <%= storage ? storage.detail : 'Not checked yet' %></span></p>
+    <p class="mt-2 flex items-start gap-2 text-sm"><span class="<%= sharp.error ? 'text-danger' : 'text-teal' %>"><%- icon(sharp.error ? 'triangle-alert' : 'circle-check','size-4') %></span><span>Image processing: <%= sharp.error ? 'unavailable (' + sharp.error + ') — originals stored without resizing' : sharp.loaded ? 'sharp ready' : 'loads on first upload' %></span></p>
+  </section>
+  <section class="card p-5 xl:col-span-3" aria-labelledby="act-h">
+    <div class="flex items-center justify-between"><h2 id="act-h" class="font-display text-lg text-ink">Recent activity</h2><a class="text-sm text-muted hover:underline" href="<%= A('/audit') %>">Audit log →</a></div>
+    <ul class="mt-3 divide-y divide-line text-sm">
+      <% for (const a of activity) { %>
+        <li class="flex flex-wrap items-baseline gap-x-2 py-2.5"><span class="font-semibold text-ink"><%= a.userName || 'System' %></span><span class="text-body"><%= a.summary || (a.action + ' ' + a.resource) %></span><span class="ml-auto text-xs text-muted"><%= timeAgo(a.createdAt) %></span></li>
+      <% } %>
+    </ul>
+  </section>
+</div>

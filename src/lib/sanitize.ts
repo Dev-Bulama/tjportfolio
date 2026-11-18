@@ -39,5 +39,24 @@ export function sanitizeRich(html: string | null | undefined): string {
 
 /** Plain text only (for emails, notes and single-line inputs). */
 export function sanitizePlain(s: string | null | undefined): string {
-  return sanitizeHtml(s ?? "", { allowedTags: [], allowedAttributes: {} }).trim();
+  // Strip tags, then decode the entities sanitize-html introduces: values are escaped again at render.
+  return sanitizeHtml(s ?? "", { allowedTags: [], allowedAttributes: {} })
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .trim();
+}
+
+/**
+ * Removes block elements that still contain an editable placeholder like [[Describe…]], then drops
+ * headings left without content beneath them — so half-finished case studies never leak placeholders.
+ */
+export function stripPlaceholders(html: string): string {
+  let out = html.replace(/<(p|li|h2|h3|h4|blockquote)(\s[^>]*)?>(?:(?!<\/\1>)[\s\S])*?\[\[[^\]]*\]\](?:(?!<\/\1>)[\s\S])*?<\/\1>/g, "");
+  out = out.replace(/<ul>\s*<\/ul>|<ol>\s*<\/ol>/g, "");
+  // heading directly followed by another heading of same/higher level, or by the end
+  for (let i = 0; i < 3; i++) out = out.replace(/<h([23])(\s[^>]*)?>(?:(?!<\/h\1>)[\s\S])*<\/h\1>\s*(?=<h[23][\s>]|$)/g, "");
+  return out.trim();
 }

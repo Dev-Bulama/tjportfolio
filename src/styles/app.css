@@ -331,3 +331,13 @@
   .card { border-color: #ccc; box-shadow: none; }
   .print-break { break-before: page; }
 }
+
+/* ── Admin ─────────────────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  :root[data-sidebar="collapsed"] .admin-sidebar { width: 4.25rem; }
+  :root[data-sidebar="collapsed"] .admin-sidebar .sidebar-label { display: none; }
+  :root[data-sidebar="collapsed"] .admin-sidebar nav a { justify-content: center; }
+}
+.rich-editor .prose { max-width: none; }
+.rich-editor .ProseMirror p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: var(--muted); float: left; height: 0; pointer-events: none; }
+.rich-editor .ProseMirror:focus { outline: none; }

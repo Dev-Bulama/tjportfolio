@@ -1,0 +1,11 @@
+<%- include('../../partials/admin/page-head', { title: 'Save your recovery codes', subtitle: 'Each code works once if you lose access to your authenticator app. They will not be shown again.' }) %>
+<div class="card max-w-xl p-6 md:p-8">
+  <ul class="grid grid-cols-2 gap-2 font-mono text-[0.95rem] text-ink" data-codes>
+    <% for (const c of codes) { %><li class="rounded-lg bg-surface-2 px-3 py-2 text-center"><%= c %></li><% } %>
+  </ul>
+  <div class="mt-6 flex flex-wrap gap-2">
+    <button type="button" class="btn btn-outline btn-sm" data-copy-codes><%- icon('copy','size-4') %> Copy</button>
+    <button type="button" class="btn btn-outline btn-sm" data-print><%- icon('printer','size-4') %> Print</button>
+    <a class="btn btn-primary btn-sm ml-auto" href="<%= A('/') %>">I've saved them — continue</a>
+  </div>
+</div>

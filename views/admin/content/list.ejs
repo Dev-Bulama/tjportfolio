@@ -1,0 +1,136 @@
+<%
+  const r = result;
+  const base = A('/content/' + def.key);
+  const catName = (id) => { const o = (options['cat:*'] || []).find(x => x[0] === id); return o ? o[1] : ''; };
+  const canEdit = user && ['owner','admin','editor'].includes(user.role);
+  const sortLink = (key) => base + qs(baseParams, { sort: key, dir: query.sort === key && (query.dir || 'asc') === 'asc' ? 'desc' : 'asc', page: undefined });
+%>
+<%- include('../../partials/admin/page-head', {
+  title: def.label + (query.trash ? ' — Trash' : ''),
+  subtitle: def.description,
+  actions: (def.canCreate !== false && canEdit && !query.trash ? `<a href="${base}/new" class="btn btn-primary btn-sm">${icon('plus','size-4')} New ${def.singular.toLowerCase()}</a>` : '') + (def.publicUrl && def.key !== 'pages' ? `<a href="${def.publicUrl({slug:''}).replace(/\/$/, '').replace(/#$/,'') || '/'}" target="_blank" class="btn btn-ghost btn-sm">${icon('external-link','size-4')} View on site</a>` : '')
+}) %>
+
+<div class="card">
+  <form method="get" class="flex flex-wrap items-end gap-3 border-b border-line p-4" role="search">
+    <% if (query.trash) { %><input type="hidden" name="trash" value="1"><% } %>
+    <div class="field min-w-[12rem] flex-1"><label class="sr-only" for="q">Search</label>
+      <div class="relative"><span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"><%- icon('search','size-4') %></span>
+      <input id="q" name="q" value="<%= query.q || '' %>" class="input !pl-9" placeholder="Search <%= def.label.toLowerCase() %>…"></div>
+    </div>
+    <% for (const f of (def.filters || [])) { %>
+      <div class="field"><label class="sr-only" for="f-<%= f.name %>"><%= f.label %></label>
+        <select id="f-<%= f.name %>" name="<%= f.name %>" class="select !py-2 text-sm" data-autosubmit>
+          <option value=""><%= f.label %>: all</option>
+          <% const opts = f.kind === 'bool' ? [['1','Yes'],['0','No']] : f.kind === 'category' ? (options['cat:' + f.categoryType] || []) : f.options; %>
+          <% for (const [v, l] of opts) { %><option value="<%= v %>" <%= String(query.filters[f.name] ?? '') === String(v) ? 'selected' : '' %>><%= l %></option><% } %>
+        </select>
+      </div>
+    <% } %>
+    <button class="btn btn-outline btn-sm">Filter</button>
+    <% if (query.q || Object.keys(query.filters).length) { %><a class="btn btn-ghost btn-sm" href="<%= base %><%= query.trash ? '?trash=1' : '' %>">Clear</a><% } %>
+    <% if (def.trash) { %>
+      <nav class="ml-auto flex gap-1 text-sm" aria-label="View">
+        <a href="<%= base %>" class="rounded-full px-3 py-1.5 <%= !query.trash ? 'bg-surface-2 font-semibold text-ink' : 'text-muted hover:text-ink' %>">All <span class="text-muted">(<%= r.counts.all %>)</span></a>
+        <a href="<%= base %>?trash=1" class="rounded-full px-3 py-1.5 <%= query.trash ? 'bg-surface-2 font-semibold text-ink' : 'text-muted hover:text-ink' %>"><%- icon('trash-2','size-3.5 inline') %> Trash <span class="text-muted">(<%= r.counts.trash %>)</span></a>
+      </nav>
+    <% } %>
+  </form>
+
+  <% if (!r.rows.length) { %>
+    <div class="flex flex-col items-center px-6 py-16 text-center">
+      <span class="grid size-14 place-items-center rounded-full bg-surface-2 text-gold-ink"><%- icon(query.trash ? 'trash-2' : def.icon, 'size-6') %></span>
+      <p class="mt-4 font-display text-xl text-ink"><%= query.trash ? 'Trash is empty' : query.q || Object.keys(query.filters).length ? 'Nothing matches' : 'Nothing here yet' %></p>
+      <p class="mt-1 max-w-sm text-sm text-muted"><%= query.trash ? 'Deleted items appear here for 30 days.' : query.q ? 'Try a different search or clear the filters.' : (def.emptyHint || 'Add your first ' + def.singular.toLowerCase() + ' to get started.') %></p>
+      <% if (!query.trash && !query.q && def.canCreate !== false && canEdit) { %><a href="<%= base %>/new" class="btn btn-primary btn-sm mt-6"><%- icon('plus','size-4') %> Add your first <%= def.singular.toLowerCase() %></a><% } %>
+    </div>
+  <% } else { %>
+  <form method="post" action="<%= base %>/bulk" data-bulk-form>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <% if (query.trash) { %><input type="hidden" name="trash" value="1"><% } %>
+    <div class="flex flex-wrap items-center gap-2 border-b border-line bg-surface-2/50 px-4 py-2 text-sm" data-bulk-bar hidden>
+      <span data-bulk-count class="font-semibold text-ink">0 selected</span>
+      <% if (canEdit) { %>
+        <% if (query.trash) { %>
+          <button name="action" value="restore" class="btn btn-ghost btn-xs"><%- icon('undo-2','size-3.5') %> Restore</button>
+          <% if (def.canDelete !== false) { %><button name="action" value="destroy" class="btn btn-ghost btn-xs text-danger" data-confirm="Permanently delete the selected items? This can't be undone."><%- icon('trash-2','size-3.5') %> Delete permanently</button><% } %>
+        <% } else { %>
+          <% if (def.status || def.key === 'testimonials') { %>
+            <button name="action" value="publish" class="btn btn-ghost btn-xs"><%- icon('eye','size-3.5') %> <%= def.key === 'testimonials' ? 'Approve' : 'Publish' %></button>
+            <button name="action" value="unpublish" class="btn btn-ghost btn-xs"><%- icon('eye-off','size-3.5') %> <%= def.key === 'testimonials' ? 'Set pending' : 'Unpublish' %></button>
+          <% } %>
+          <% if (def.featured) { %><button name="action" value="feature" class="btn btn-ghost btn-xs"><%- icon('star','size-3.5') %> Feature</button><button name="action" value="unfeature" class="btn btn-ghost btn-xs">Unfeature</button><% } %>
+          <% if (def.trash && def.canDelete !== false) { %><button name="action" value="trash" class="btn btn-ghost btn-xs text-danger"><%- icon('trash-2','size-3.5') %> Move to trash</button><% } %>
+        <% } %>
+      <% } %>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead><tr>
+          <th class="w-10"><input type="checkbox" class="checkbox" data-select-all aria-label="Select all"></th>
+          <% if (canReorder) { %><th class="w-8"><span class="sr-only">Reorder</span></th><% } %>
+          <% for (const c of def.columns) { %>
+            <th class="<%= c.hideOnMobile ? 'hidden md:table-cell' : '' %>"><% if (c.kind !== 'image' && c.label) { %><a href="<%= sortLink(c.key) %>" class="inline-flex items-center gap-1 hover:text-ink"><%= c.label %><% if (query.sort === c.key) { %><%- icon(query.dir === 'desc' ? 'arrow-down' : 'arrow-up', 'size-3') %><% } %></a><% } else { %><span class="sr-only">Image</span><% } %></th>
+          <% } %>
+          <% if (def.featured) { %><th class="hidden w-10 md:table-cell"><span class="sr-only">Featured</span></th><% } %>
+          <th class="w-px"><span class="sr-only">Actions</span></th>
+        </tr></thead>
+        <tbody <% if (canReorder && canEdit) { %>data-sortable="<%= base %>/reorder"<% } %>>
+          <% for (const row of r.rows) { %>
+            <tr data-id="<%= row.id %>">
+              <td><input type="checkbox" class="checkbox" name="ids" value="<%= row.id %>" data-row-check aria-label="Select <%= row[def.titleField] %>"></td>
+              <% if (canReorder) { %><td><button type="button" class="cursor-grab text-muted hover:text-ink" data-drag-handle aria-label="Drag to reorder"><%- icon('grip-vertical','size-4') %></button></td><% } %>
+              <% for (const c of def.columns) { const v = row[c.key]; %>
+                <td class="<%= c.hideOnMobile ? 'hidden md:table-cell' : '' %>">
+                  <% if (c.kind === 'title') { %>
+                    <a class="font-semibold text-ink hover:underline" href="<%= base %>/<%= row.id %>"><%= v || '(untitled)' %></a>
+                    <% if (row.isSample) { %><span class="chip chip-gold ml-1 !py-0.5 !text-[0.68rem]">Sample</span><% } %>
+                    <% if (row.slug && def.key !== 'pages') { %><span class="block text-xs text-muted">/<%= row.slug %></span><% } %>
+                  <% } else if (c.kind === 'status') { %><%- include('../../partials/admin/status-badge', { value: row.status === 'scheduled' && row.publishedAt && new Date(row.publishedAt) <= new Date() ? 'published' : row.status }) %>
+                  <% } else if (c.kind === 'moderation') { %><%- include('../../partials/admin/status-badge', { value: v }) %>
+                  <% } else if (c.kind === 'date') { %><span class="whitespace-nowrap text-muted"><%= v ? formatDate(v, 'short') : '—' %></span>
+                  <% } else if (c.kind === 'bool') { %><%- v ? icon('check','size-4 text-teal') : '<span class="text-muted">—</span>' %>
+                  <% } else if (c.kind === 'category') { %><%= catName(v) || '—' %>
+                  <% } else if (c.kind === 'rating') { %><%- stars(v || 0) %>
+                  <% } else if (c.kind === 'badge') { %><span class="chip"><%= String(v || '').replace(/_/g,' ') %></span>
+                  <% } else if (c.kind === 'image') { %>
+                    <% const m = v ? media.get(v) : null; %>
+                    <% if (m) { %><img src="<%= mediaUrl(m, 320) %>" alt="" class="size-10 rounded-md object-cover" width="40" height="40" loading="lazy"><% } else { %><span class="grid size-10 place-items-center rounded-md bg-surface-2 text-muted"><%- icon(def.icon,'size-4') %></span><% } %>
+                  <% } else { %><span class="line-clamp-1 max-w-[18rem]"><%= v ?? '—' %></span><% } %>
+                </td>
+              <% } %>
+              <% if (def.featured) { %><td class="hidden md:table-cell"><%- row.featured ? icon('star','size-4 text-gold fill-current') : '' %></td><% } %>
+              <td class="whitespace-nowrap text-right">
+                <details class="relative inline-block text-left" data-menu>
+                  <summary class="btn btn-ghost btn-icon !size-8 !min-h-8 list-none [&::-webkit-details-marker]:hidden" aria-label="Actions for <%= row[def.titleField] %>"><%- icon('ellipsis','size-4') %></summary>
+                  <div class="absolute right-0 z-20 mt-1 w-44 rounded-xl border border-line bg-surface p-1 text-sm shadow-xl">
+                    <% if (!query.trash) { %>
+                      <a class="block rounded-lg px-3 py-2 hover:bg-surface-2" href="<%= base %>/<%= row.id %>">Edit</a>
+                      <% if (def.publicUrl) { %><a class="block rounded-lg px-3 py-2 hover:bg-surface-2" href="<%= base %>/<%= row.id %>/preview" target="_blank">Preview</a><% } %>
+                      <% if (canEdit && def.canCreate !== false) { %><button formaction="<%= base %>/<%= row.id %>/duplicate" class="block w-full rounded-lg px-3 py-2 text-left hover:bg-surface-2">Duplicate</button><% } %>
+                      <% if (canEdit && def.trash && def.canDelete !== false) { %><button formaction="<%= base %>/<%= row.id %>/trash" class="block w-full rounded-lg px-3 py-2 text-left text-danger hover:bg-surface-2">Move to trash</button><% } %>
+                    <% } else if (canEdit) { %>
+                      <button name="action" value="restore" formaction="<%= base %>/bulk?only=<%= row.id %>" class="block w-full rounded-lg px-3 py-2 text-left hover:bg-surface-2" data-only="<%= row.id %>">Restore</button>
+                      <button name="action" value="destroy" class="block w-full rounded-lg px-3 py-2 text-left text-danger hover:bg-surface-2" data-only="<%= row.id %>" data-confirm="Permanently delete “<%= row[def.titleField] %>”? This can't be undone.">Delete permanently</button>
+                    <% } %>
+                  </div>
+                </details>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </form>
+  <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm text-muted">
+    <span><%= r.total %> <%= r.total === 1 ? def.singular.toLowerCase() : def.label.toLowerCase() %><% if (canReorder && canEdit) { %> · drag rows to reorder<% } %></span>
+    <% if (r.pages > 1) { %>
+      <nav class="flex items-center gap-1" aria-label="Pagination">
+        <% if (r.page > 1) { %><a class="btn btn-ghost btn-xs" href="<%= base + qs(baseParams, { page: r.page - 1 }) %>" rel="prev">← Prev</a><% } %>
+        <span class="px-2">Page <%= r.page %> of <%= r.pages %></span>
+        <% if (r.page < r.pages) { %><a class="btn btn-ghost btn-xs" href="<%= base + qs(baseParams, { page: r.page + 1 }) %>" rel="next">Next →</a><% } %>
+      </nav>
+    <% } %>
+  </div>
+  <% } %>
+</div>

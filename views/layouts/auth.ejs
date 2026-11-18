@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en" class="no-js" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow">
+<title><%= locals.title ? title + ' · ' : '' %>Tijani Bulama</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="<%= asset('/assets/app.css') %>">
+<script nonce="<%= nonce %>">(function(){var d=document.documentElement;d.classList.remove('no-js');var t=null;try{t=localStorage.getItem('theme')}catch(e){}if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}d.dataset.theme=t;})();</script>
+</head>
+<body class="min-h-dvh bg-bg text-body">
+<div class="grid min-h-dvh lg:grid-cols-2">
+  <div class="relative hidden flex-col justify-between overflow-hidden bg-navy p-12 text-navy-ink lg:flex">
+    <div class="flex items-center gap-3"><span class="grid size-10 place-items-center rounded-full border border-gold font-display font-semibold">TB</span><span class="font-display text-xl">Tijani Bulama</span></div>
+    <div>
+      <p class="kicker !text-gold">Content studio</p>
+      <p class="mt-6 max-w-md font-display text-[2.6rem] italic leading-tight">Software that ships. Teams that can run it.</p>
+    </div>
+    <p class="text-sm text-[#9fb0c4]">Private admin area. Activity is logged.</p>
+    <div class="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full border border-gold/20"></div>
+    <div class="pointer-events-none absolute -right-8 top-24 size-72 rounded-full border border-gold/10"></div>
+  </div>
+  <main id="main" class="flex items-center justify-center p-6 sm:p-12">
+    <div class="w-full max-w-md"><% if (locals.flash) { %><div class="alert <%= flash.type === 'error' ? 'alert-danger' : 'alert-success' %> mb-6 text-sm" role="status"><%= flash.msg %></div><% } %><%- body %></div>
+  </main>
+</div>
+<script type="module" src="<%= asset('/assets/admin.js') %>" nonce="<%= nonce %>"></script>
+</body></html>

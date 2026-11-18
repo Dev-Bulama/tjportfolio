@@ -1,0 +1,4 @@
+<% const st = locals.value; const sched = st === 'scheduled'; %>
+<span class="chip <%= st === 'published' || st === 'approved' ? 'chip-teal' : st === 'rejected' ? 'chip-danger' : sched || st === 'pending' ? 'chip-gold' : '' %>">
+  <span class="size-1.5 rounded-full <%= st === 'published' || st === 'approved' ? 'bg-teal' : st === 'rejected' ? 'bg-danger' : sched || st === 'pending' ? 'bg-gold' : 'bg-muted' %>"></span><%= st === 'published' ? 'Published' : st === 'scheduled' ? 'Scheduled' : st ? st[0].toUpperCase() + st.slice(1) : 'Draft' %>
+</span>

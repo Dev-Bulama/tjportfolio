@@ -1,0 +1,6 @@
+<div class="card mx-auto max-w-lg p-10 text-center">
+  <span class="mx-auto grid size-14 place-items-center rounded-full bg-surface-2 text-danger"><%- icon('lock','size-6') %></span>
+  <h1 class="mt-5 text-display-sm">You don't have access to this</h1>
+  <p class="mt-2 text-muted">Your role (<%= user.role %>) can't open this section. Ask the site owner if you need access.</p>
+  <a class="btn btn-outline btn-sm mt-6" href="<%= A('/') %>">Back to dashboard</a>
+</div>

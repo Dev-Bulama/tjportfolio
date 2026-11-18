@@ -1,0 +1,22 @@
+<aside class="admin-sidebar fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col border-r border-line bg-surface transition-transform lg:sticky lg:top-0 lg:h-dvh lg:translate-x-0" data-sidebar aria-label="Admin navigation">
+  <div class="flex items-center gap-3 border-b border-line px-5 py-4">
+    <span class="grid size-8 shrink-0 place-items-center rounded-full border border-gold font-display text-sm font-semibold text-ink">TB</span>
+    <span class="sidebar-label font-display text-[1.05rem] text-ink">Admin</span>
+    <button type="button" class="btn btn-ghost btn-icon ml-auto lg:hidden" data-sidebar-close aria-label="Close navigation"><%- icon('x', 'size-4') %></button>
+  </div>
+  <nav class="flex-1 overflow-y-auto px-3 py-4">
+    <% for (const group of nav) { %>
+      <% if (group.label) { %><p class="sidebar-label mb-1 mt-5 px-3 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted"><%= group.label %></p><% } %>
+      <ul class="grid gap-0.5">
+        <% for (const item of group.items) { const active = item.href === '/' ? adminPath === '/' : adminPath === item.href || adminPath.startsWith(item.href + '/'); %>
+          <li><a href="<%= A(item.href) %>" title="<%= item.label %>" class="group flex items-center gap-3 rounded-lg px-3 py-2 text-[0.9rem] <%= active ? 'bg-surface-2 font-semibold text-ink' : 'text-body hover:bg-surface-2 hover:text-ink' %>" <% if (active) { %>aria-current="page"<% } %>>
+            <span class="<%= active ? 'text-gold-ink' : 'text-muted group-hover:text-ink' %>"><%- icon(item.icon, 'size-[1.05rem]') %></span>
+            <span class="sidebar-label flex-1 truncate"><%= item.label %></span>
+            <% if (badges[item.href]) { %><span class="sidebar-label rounded-full bg-navy px-2 text-[0.7rem] font-semibold leading-5 text-navy-ink"><%= badges[item.href] %></span><% } %>
+          </a></li>
+        <% } %>
+      </ul>
+    <% } %>
+  </nav>
+</aside>
+<div class="fixed inset-0 z-40 hidden bg-black/40 lg:hidden" data-sidebar-backdrop></div>

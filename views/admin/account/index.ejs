@@ -1,0 +1,64 @@
+<%- include('../../partials/admin/page-head', { title: 'Account & security', subtitle: 'Your profile, password, two-factor authentication and signed-in devices.' }) %>
+<div class="grid gap-6 xl:grid-cols-2">
+  <section class="card p-6" aria-labelledby="h-profile">
+    <h2 id="h-profile" class="text-display-sm">Profile</h2>
+    <form method="post" action="<%= A('/account/profile') %>" class="mt-5 grid gap-4">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field"><label class="label" for="name">Display name</label><input class="input" id="name" name="name" value="<%= user.name %>" required maxlength="191"></div>
+      <div class="field"><span class="label">Email</span><p class="text-sm"><%= user.email %> · <span class="capitalize"><%= user.role %></span></p></div>
+      <div><button class="btn btn-primary btn-sm">Save</button></div>
+    </form>
+  </section>
+  <section class="card p-6" aria-labelledby="h-pw">
+    <h2 id="h-pw" class="text-display-sm">Change password</h2>
+    <form method="post" action="<%= A('/account/password') %>" class="mt-5 grid gap-4">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field"><label class="label" for="current">Current password</label><input class="input" id="current" name="current" type="password" autocomplete="current-password" required></div>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="field"><label class="label" for="password">New password</label><input class="input" id="password" name="password" type="password" autocomplete="new-password" minlength="12" required></div>
+        <div class="field"><label class="label" for="confirm">Confirm</label><input class="input" id="confirm" name="confirm" type="password" autocomplete="new-password" required></div>
+      </div>
+      <p class="help">12+ characters, mixing three of lowercase, uppercase, numbers and symbols. Other devices are signed out.</p>
+      <div><button class="btn btn-primary btn-sm">Change password</button></div>
+    </form>
+  </section>
+  <section class="card p-6" aria-labelledby="h-2fa">
+    <h2 id="h-2fa" class="text-display-sm">Two-factor authentication</h2>
+    <% if (user.totpEnabled) { %>
+      <p class="mt-3 flex items-center gap-2 text-sm"><span class="chip chip-teal"><%- icon('shield-check','size-3.5') %> On</span> <%= remaining %> of 10 recovery codes left.</p>
+      <form method="post" action="<%= A('/account/recovery') %>" class="mt-5 flex flex-wrap items-end gap-3">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="field"><label class="label" for="rc-code">Authenticator code</label><input class="input w-40 font-mono" id="rc-code" name="code" inputmode="numeric" autocomplete="one-time-code" required></div>
+        <button class="btn btn-outline btn-sm">Generate new recovery codes</button>
+      </form>
+      <% if (user.role !== 'owner') { %>
+      <form method="post" action="<%= A('/account/2fa/disable') %>" class="mt-4 flex flex-wrap items-end gap-3">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="field"><label class="label" for="dis-code">Code</label><input class="input w-40 font-mono" id="dis-code" name="code" required></div>
+        <button class="btn btn-ghost btn-sm text-danger">Turn off 2FA</button>
+      </form>
+      <% } else { %><p class="help mt-4">Two-factor authentication is mandatory for the Owner.</p><% } %>
+    <% } else { %>
+      <p class="mt-3 text-sm">Protect your account with an authenticator app (Google Authenticator, 1Password, Authy…).</p>
+      <a class="btn btn-primary btn-sm mt-5" href="<%= A('/account/2fa') %>"><%- icon('shield','size-4') %> Set up 2FA</a>
+    <% } %>
+  </section>
+  <section class="card p-6" aria-labelledby="h-sessions">
+    <div class="flex items-center justify-between gap-3">
+      <h2 id="h-sessions" class="text-display-sm">Active devices</h2>
+      <% if (sessions.length > 1) { %><form method="post" action="<%= A('/account/sessions/revoke-others') %>"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-sm">Sign out others</button></form><% } %>
+    </div>
+    <ul class="mt-4 divide-y divide-line">
+      <% for (const s of sessions) { %>
+        <li class="flex items-center gap-3 py-3 text-sm">
+          <%- icon(/mobile|android|iphone/i.test(s.userAgent || '') ? 'smartphone' : 'monitor', 'size-5 text-muted') %>
+          <div class="min-w-0 flex-1"><p class="truncate text-ink"><%= (s.userAgent || 'Unknown device').slice(0, 80) %></p><p class="text-muted">Signed in <%= formatDate(s.createdAt, 'short') %> · active <%= timeAgo(s.lastSeenAt) %></p></div>
+          <% if (s.id === currentSession) { %><span class="chip chip-teal">This device</span><% } else { %>
+            <form method="post" action="<%= A('/account/sessions/' + s.id + '/revoke') %>"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-xs">Revoke</button></form>
+          <% } %>
+        </li>
+      <% } %>
+    </ul>
+    <p class="help mt-3">Sessions expire after 7 days of inactivity or 30 days in total.</p>
+  </section>
+</div>

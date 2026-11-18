@@ -1,0 +1,13 @@
+<h1 class="text-display-md">Choose a new password</h1>
+<% if (locals.invalid) { %>
+  <div class="alert alert-danger mt-6 text-sm" role="alert">This reset link is invalid or has expired. Request a new one.</div>
+  <a class="btn btn-outline mt-6" href="<%= A('/forgot') %>">Request a new link</a>
+<% } else { %>
+  <% if (locals.problems) { %><div class="alert alert-danger mt-6 text-sm" role="alert"><ul class="list-disc pl-4"><% for (const p of problems) { %><li><%= p %></li><% } %></ul></div><% } %>
+  <form method="post" class="mt-8 grid gap-5">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="field"><label class="label" for="password">New password</label><input class="input" id="password" name="password" type="password" autocomplete="new-password" minlength="12" required aria-describedby="pw-help"><p class="help" id="pw-help">At least 12 characters, mixing three of: lowercase, uppercase, numbers, symbols.</p></div>
+    <div class="field"><label class="label" for="confirm">Confirm password</label><input class="input" id="confirm" name="confirm" type="password" autocomplete="new-password" required></div>
+    <button class="btn btn-primary w-full" type="submit">Save password</button>
+  </form>
+<% } %>
