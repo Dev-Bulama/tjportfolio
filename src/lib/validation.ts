@@ -20,26 +20,31 @@ export const str = (max = 191, label = "This field") =>
   trimmed.pipe(z.string().min(1, `${label} is required.`).max(max, `${label} is too long (max ${max}).`));
 export const optStr = (max = 191) =>
   z
-    .union([z.string(), z.null(), z.undefined()])
+    .string()
+    .nullish()
     .transform((s) => (s ?? "").trim())
-    .pipe(z.string().max(max, `Too long (max ${max}).`))
+    .refine((s) => s.length <= max, `Too long (max ${max}).`)
     .transform((s) => (s === "" ? null : s));
 export const email = trimmed.pipe(z.string().toLowerCase().email("Enter a valid email address.").max(191));
 export const optInt = z
-  .union([z.string(), z.number(), z.null(), z.undefined()])
+  .union([z.string(), z.number()])
+  .nullish()
   .transform((v) => (v === "" || v === null || v === undefined ? null : Number(v)))
   .refine((v) => v === null || Number.isFinite(v), "Must be a number.")
   .transform((v) => (v === null ? null : Math.trunc(v as number)));
 export const checkbox = z
-  .union([z.literal("on"), z.literal("true"), z.literal("1"), z.literal("false"), z.literal("0"), z.literal(""), z.boolean(), z.array(z.string()), z.undefined()])
+  .union([z.string(), z.boolean(), z.array(z.string())])
+  .optional()
   .transform((v) => (Array.isArray(v) ? v.includes("1") || v.includes("on") || v.includes("true") : v === true || v === "on" || v === "true" || v === "1"));
 export const optUrl = z
-  .union([z.string(), z.null(), z.undefined()])
+  .string()
+  .nullish()
   .transform((s) => (s ?? "").trim())
   .refine((s) => s === "" || /^\[\[.*\]\]$/.test(s) || /^(https?:\/\/|mailto:|tel:|\/)[^\s]*$/i.test(s), "Enter a full URL starting with https://")
   .transform((s) => (s === "" ? null : s));
 export const optDate = z
-  .union([z.string(), z.null(), z.undefined()])
+  .string()
+  .nullish()
   .transform((s) => (s ?? "").trim())
   .refine((s) => s === "" || /^\d{4}-\d{2}-\d{2}$/.test(s), "Use the format YYYY-MM-DD.")
   .transform((s) => (s === "" ? null : s));

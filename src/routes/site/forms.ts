@@ -117,13 +117,13 @@ const ticketSchema = z.object({
   company: optStr(191),
   email,
   phone: optStr(40),
-  projectId: z.string().optional().transform((v) => (v && /^\d+$/.test(v) ? Number(v) : null)),
+  projectId: z.string().nullish().transform((v) => (v && /^\d+$/.test(v) ? Number(v) : null)),
   projectOther: optStr(191),
   issueType: z.enum(s.ISSUE_TYPES, { message: "Choose the type of issue." }),
   priority: z.enum(s.TICKET_PRIORITY, { message: "Choose a priority." }),
   description: str(8000, "Description").refine((v) => v.length >= 15, "Describe the issue in a little more detail."),
   affectedUrl: optStr(500).refine((v) => !v || /^https?:\/\//i.test(v), "Enter a full URL starting with https://"),
-  contactMethod: z.enum(["email", "phone", "whatsapp"]).default("email"),
+  contactMethod: z.enum(["email", "phone", "whatsapp"]).optional().transform((v) => v ?? "email"),
 });
 
 async function maintenanceData(res: Response) {
@@ -242,7 +242,7 @@ const regSchema = z.object({
   email,
   phone: optStr(40),
   company: optStr(191),
-  seats: z.coerce.number().int().min(1, "At least one seat.").max(500).default(1),
+  seats: z.union([z.string(), z.number()]).nullish().transform((v) => (v === "" || v === null || v === undefined ? 1 : Number(v))).pipe(z.number().int("Whole number only.").min(1, "At least one seat.").max(500)),
   message: optStr(3000),
 });
 
