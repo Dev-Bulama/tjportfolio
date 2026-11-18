@@ -8,21 +8,21 @@
 /* ── Fonts (self-hosted, copied to /fonts by scripts/build-client.mjs) ─────────────────────────── */
 @font-face {
   font-family: "Fraunces";
-  src: url("/fonts/fraunces-opsz.woff2") format("woff2");
+  src: url("/fonts/fraunces.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Fraunces";
-  src: url("/fonts/fraunces-opsz-italic.woff2") format("woff2");
+  src: url("/fonts/fraunces-italic.woff2") format("woff2");
   font-weight: 100 900;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
   font-family: "Inter";
-  src: url("/fonts/inter-opsz.woff2") format("woff2");
+  src: url("/fonts/inter.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -32,7 +32,7 @@
   src: url("/fonts/jetbrains-mono.woff2") format("woff2");
   font-weight: 100 800;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 /* Metric-matched fallbacks keep CLS near zero while web fonts load. */
 @font-face {
@@ -315,7 +315,7 @@
   @media (min-width: 1024px) { .masonry { columns: 3; } }
   .masonry > * { break-inside: avoid; margin-bottom: 1rem; }
 
-  .stars { color: var(--gold); letter-spacing: .1em; }
+  .stars { color: var(--gold-ink); letter-spacing: .1em; }
   .toc a[aria-current="true"] { color: var(--ink); font-weight: 600; }
 }
 

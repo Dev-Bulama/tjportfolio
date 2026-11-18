@@ -23,8 +23,9 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="alternate" type="application/rss+xml" title="Insights — <%= profile.fullName %>" href="/rss.xml">
-<link rel="preload" href="/fonts/fraunces-opsz.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/inter-opsz.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<% if (path === "/") { %><link rel="preload" href="/fonts/fraunces-italic.woff2" as="font" type="font/woff2" crossorigin><% } %>
 <link rel="stylesheet" href="<%= asset('/assets/app.css') %>">
 <% if (accent) { %><style>:root{--gold:<%= accent %>}</style><% } %>
 <script nonce="<%= nonce %>">(function(){var d=document.documentElement;d.classList.remove('no-js');var t=null;try{t=localStorage.getItem('theme')}catch(e){}if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}d.dataset.theme=t;})();</script>

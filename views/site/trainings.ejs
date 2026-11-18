@@ -4,6 +4,7 @@
     <button type="button" class="chip shrink-0 aria-pressed:chip-navy" data-filter="all" aria-pressed="true">All tracks</button>
     <% for (const t of tracks) { %><button type="button" class="chip shrink-0 aria-pressed:chip-navy" data-filter="<%= t.slug %>" aria-pressed="false"><%= t.name %></button><% } %>
   </div>
+  <h2 class="sr-only">Trainings</h2>
   <p class="sr-only" data-count-label aria-live="polite"></p>
   <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-grid>
     <% trainings.forEach((t, i) => { %><div data-item><%- include('../partials/site/training-card', { t, i: i % 3 }) %></div><% }) %>

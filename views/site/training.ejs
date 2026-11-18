@@ -7,7 +7,7 @@
     <% if (t.modules.length) { %>
       <h2 class="mt-14 text-display-md">Curriculum</h2>
       <ol class="mt-6 divide-y divide-line border-y border-line">
-        <% t.modules.forEach((m, i) => { %><li class="grid gap-2 py-5 sm:grid-cols-[4rem_1fr]"><span class="stat-num text-2xl text-gold">0<%= i + 1 %></span><div><h3 class="font-display text-xl text-ink"><%= m.title %></h3><% if (m.description) { %><p class="mt-1 text-[0.95rem]"><%= m.description %></p><% } %></div></li><% }) %>
+        <% t.modules.forEach((m, i) => { %><li class="grid gap-2 py-5 sm:grid-cols-[4rem_1fr]"><span class="stat-num text-2xl text-gold-ink">0<%= i + 1 %></span><div><h3 class="font-display text-xl text-ink"><%= m.title %></h3><% if (m.description) { %><p class="mt-1 text-[0.95rem]"><%= m.description %></p><% } %></div></li><% }) %>
       </ol>
     <% } %>
     <% if (t.outcomes.length) { %>

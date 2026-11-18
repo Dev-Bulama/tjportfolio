@@ -10,9 +10,10 @@ fs.mkdirSync(out, { recursive: true });
 fs.mkdirSync(fonts, { recursive: true });
 
 const copies = {
-  "fraunces-opsz.woff2": "@fontsource-variable/fraunces/files/fraunces-latin-opsz-normal.woff2",
-  "fraunces-opsz-italic.woff2": "@fontsource-variable/fraunces/files/fraunces-latin-opsz-italic.woff2",
-  "inter-opsz.woff2": "@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2",
+  // Weight-axis-only subsets: ~40% smaller than the opsz builds (Lighthouse LCP on slow 4G).
+  "fraunces.woff2": "@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2",
+  "fraunces-italic.woff2": "@fontsource-variable/fraunces/files/fraunces-latin-wght-italic.woff2",
+  "inter.woff2": "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2",
   "jetbrains-mono.woff2": "@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2",
 };
 for (const [dest, src] of Object.entries(copies)) {

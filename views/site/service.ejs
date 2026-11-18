@@ -15,7 +15,7 @@
 <section class="container-x py-20" aria-labelledby="proc-h">
   <%- include('../partials/site/section-head', { kicker: 'Process', title: 'How it works', id: 'proc-h' }) %>
   <ol class="grid gap-px overflow-hidden rounded-[12px] border border-line bg-line md:grid-cols-<%= Math.min(s.process.length, 4) %>">
-    <% s.process.forEach((p, i) => { %><li class="bg-surface p-7 reveal" style="--i:<%= i %>"><span class="stat-num text-4xl text-gold">0<%= i + 1 %></span><h3 class="mt-4 text-display-sm"><%= p.title %></h3><p class="mt-3 text-[0.95rem]"><%= p.description %></p></li><% }) %>
+    <% s.process.forEach((p, i) => { %><li class="bg-surface p-7 reveal" style="--i:<%= i %>"><span class="stat-num text-4xl text-gold-ink">0<%= i + 1 %></span><h3 class="mt-4 text-display-sm"><%= p.title %></h3><p class="mt-3 text-[0.95rem]"><%= p.description %></p></li><% }) %>
   </ol>
 </section>
 <% } %>

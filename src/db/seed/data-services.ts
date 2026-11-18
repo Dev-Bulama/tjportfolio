@@ -25,7 +25,7 @@ export const services: SeedService[] = [
       "Web and mobile products built to ship and built to last — from first architecture sketch to a production system your team can confidently maintain.",
     body: `<p>Most software problems are not technology problems; they are clarity problems. I start by pinning down who the product serves, what "done" looks like and which constraints are real — budget, hosting, integrations, compliance — before writing a line of code.</p>
 <p>From there I build with a deliberately boring, well-supported stack: Laravel or Node.js on the server, React or React Native on the client, PostgreSQL or MySQL underneath, deployed to AWS or managed hosting depending on what your team can operate. Releases are small and frequent, every important path is tested, and the codebase comes with documentation written for the next engineer, not for me.</p>
-<h3>Typical engagements</h3>
+<h2>Typical engagements</h2>
 <ul><li>New web applications and customer portals</li><li>Cross-platform mobile apps with React Native</li><li>E-commerce and marketplace builds</li><li>WordPress plugins and themes for specific business workflows</li><li>Rescue and modernisation of existing codebases</li></ul>`,
     deliverables: [
       "Discovery notes, scope and technical architecture",
@@ -58,7 +58,7 @@ export const services: SeedService[] = [
       "Practical AI agents and LLM automations that remove repetitive work — with the evaluation, guardrails and cost controls production use demands.",
     body: `<p>AI is useful when it is pointed at a specific, measurable bottleneck: the support inbox that never empties, the content pipeline that depends on one overworked person, the documents someone re-types every week. I help teams find those bottlenecks and build agents and automations that handle them reliably.</p>
 <p>Every build includes an evaluation set drawn from your real data, human review where the stakes are high, logging you can audit, and a clear monthly cost estimate. The goal is a system your operations team trusts — not a demo.</p>
-<h3>Typical engagements</h3>
+<h2>Typical engagements</h2>
 <ul><li>Customer-support and lead-qualification assistants</li><li>Content and social-media production pipelines</li><li>Document extraction and classification</li><li>Internal knowledge assistants over your own documents</li><li>AI video and ad-creative workflows</li></ul>`,
     deliverables: [
       "Opportunity assessment and ROI estimate",
@@ -91,7 +91,7 @@ export const services: SeedService[] = [
       "Instructor-led programmes in cloud, virtualization, software development, data, AI and cybersecurity — built around hands-on labs and your team's real work.",
     body: `<p>Good training changes how a team works on Monday morning. My programmes are built around labs, realistic scenarios and capstone projects rather than slides, and every one starts with a needs assessment so the content matches your team's stack and level.</p>
 <p>I have delivered programmes for corporate IT departments, banks, business schools and public institutions including the ECOWAS Community Court of Justice — on-site and virtually, from five-day bootcamps to multi-week cohorts.</p>
-<h3>Popular tracks</h3>
+<h2>Popular tracks</h2>
 <ul><li>AWS Certified Solutions Architect – Associate</li><li>VMware vSAN and VMware Cloud Foundation</li><li>Secure coding with ASP.NET Core, C# and .NET</li><li>React Native and full-stack web development</li><li>AI adoption, AI &amp; machine learning, AI video creation</li><li>dbt analytics engineering</li></ul>`,
     deliverables: [
       "Training needs assessment",
@@ -124,7 +124,7 @@ export const services: SeedService[] = [
       "Oracle Database 19c expertise — SQL, PL/SQL, administration and RAC — delivered as hands-on training or as consulting on your own environments.",
     body: `<p>Oracle Database still runs the core of many banks, telecoms and public institutions, and the skills to operate it well are scarce. I teach and consult across the full stack: SQL and PL/SQL for developers, administration for DBAs, and Real Application Clusters for teams running high-availability systems.</p>
 <p>Training is lab-first. Participants build their own environments — including a two-node RAC cluster with DNS and shared storage on a laptop with VirtualBox — so they understand what the tooling is doing rather than memorising commands.</p>
-<h3>Areas covered</h3>
+<h2>Areas covered</h2>
 <ul><li>Oracle Database 19c SQL and PL/SQL</li><li>Administration I–III (1Z0-082 aligned), including automation</li><li>RAC 19c installation, administration and troubleshooting</li><li>Backup and recovery, performance diagnostics</li><li>Environment reviews and upgrade planning</li></ul>`,
     deliverables: [
       "Lab environment build guides",
@@ -156,7 +156,7 @@ export const services: SeedService[] = [
       "Lean Six Sigma programmes up to Master Black Belt curriculum, with statistical practice sets and real improvement projects.",
     body: `<p>Lean Six Sigma gives teams a shared language for improving processes with evidence instead of opinion. My programmes cover the DMAIC method end to end — from defining the problem and measuring the baseline to statistical analysis, improvement and control — with practice sets that make the statistics feel routine.</p>
 <p>Participants work on improvement projects from their own organisation, so the training pays for itself in measurable process gains.</p>
-<h3>Programme levels</h3>
+<h2>Programme levels</h2>
 <ul><li>Yellow and Green Belt foundations</li><li>Black Belt statistical toolkit</li><li>Master Black Belt curriculum: deployment, coaching and advanced statistics</li></ul>`,
     deliverables: [
       "Programme manual (up to 70+ pages at MBB level)",

@@ -4,7 +4,7 @@
     <% stats.forEach((s, i) => { %>
       <div class="px-2 py-8 md:px-8 md:py-10 reveal" style="--i:<%= i %>">
         <dt class="mono-label"><%= s.label %></dt>
-        <dd class="stat-num mt-2 text-[clamp(2.2rem,1.6rem+2vw,3.4rem)] leading-none"><span data-count="<%= s.value %>"><%= formatNumber(s.value) %></span><span class="text-gold"><%= s.suffix || '' %></span></dd>
+        <dd class="stat-num mt-2 text-[clamp(2.2rem,1.6rem+2vw,3.4rem)] leading-none"><span data-count="<%= s.value %>"><%= formatNumber(s.value) %></span><span class="text-gold-ink"><%= s.suffix || '' %></span></dd>
       </div>
     <% }) %>
   </dl>
