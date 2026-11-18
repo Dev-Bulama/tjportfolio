@@ -1,0 +1,12 @@
+<section class="container-x py-12 md:py-20" aria-labelledby="sec-cta">
+  <div class="relative overflow-hidden rounded-[20px] bg-navy px-6 py-14 text-center text-navy-ink sm:px-12 md:py-20">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" aria-hidden="true"></div>
+    <p class="kicker justify-center !text-gold"><%= sec.kicker %></p>
+    <h2 id="sec-cta" class="mx-auto mt-5 max-w-3xl text-display-lg !text-navy-ink"><%= sec.title %></h2>
+    <p class="mx-auto mt-5 max-w-xl text-[1.05rem] text-[#c9d2de]"><%= sec.intro || 'Tell me what you are building or who you need to train. I reply to every enquiry within two working days.' %></p>
+    <div class="mt-9 flex flex-wrap justify-center gap-3">
+      <a href="/contact" class="btn bg-gold text-[#0a1420] hover:bg-[#cfae74]">Start a conversation <%- icon('arrow-right', 'size-4') %></a>
+      <% if (whatsapp) { %><a href="<%= whatsapp %>" class="btn btn-outline !text-navy-ink" target="_blank" rel="noopener" data-track="whatsapp_click"><%- icon('whatsapp', 'size-4') %> WhatsApp</a><% } %>
+    </div>
+  </div>
+</section>

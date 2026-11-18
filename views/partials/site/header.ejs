@@ -1,0 +1,45 @@
+<header class="site-header sticky top-0 z-40 bg-bg/95" data-header>
+  <div class="header-inner container-x flex items-center justify-between gap-6 py-4 transition-all">
+    <a href="/" class="group flex items-center gap-3 text-ink" aria-label="<%= profile.fullName %> — home">
+      <% if (brand.logoLight) { %>
+        <img src="<%= mediaUrl(brand.logoLight, 320) %>" alt="" class="h-9 w-auto dark:hidden" width="<%= brand.logoLight.width || 160 %>" height="<%= brand.logoLight.height || 36 %>">
+        <img src="<%= mediaUrl(brand.logoDark || brand.logoLight, 320) %>" alt="" class="hidden h-9 w-auto dark:block" width="160" height="36">
+      <% } else { %>
+        <span class="grid size-9 place-items-center rounded-full border border-gold font-display text-[0.95rem] font-semibold tracking-tight text-ink">TB</span>
+        <span class="font-display text-[1.15rem] font-medium tracking-tight">Tijani Bulama</span>
+      <% } %>
+    </a>
+    <nav aria-label="Primary" class="hidden lg:block">
+      <ul class="flex items-center gap-7 text-[0.92rem] font-medium">
+        <% for (const item of menus.header) { %>
+          <li><a href="<%= item.href %>" class="link-grow py-1 <%= isActive(item.href) ? 'text-ink' : 'text-body' %>" <% if (isActive(item.href)) { %>aria-current="page"<% } %> <% if (item.newTab) { %>target="_blank" rel="noopener"<% } %>><%= item.label %></a></li>
+        <% } %>
+      </ul>
+    </nav>
+    <div class="flex items-center gap-2">
+      <button type="button" class="btn btn-ghost btn-icon" data-theme-toggle aria-label="Toggle dark mode">
+        <span class="dark:hidden"><%- icon('moon', 'size-[1.15rem]') %></span><span class="hidden dark:inline"><%- icon('sun', 'size-[1.15rem]') %></span>
+      </button>
+      <a href="/resume" class="btn btn-outline btn-sm hidden sm:inline-flex"><%- icon('download', 'size-4') %> Download CV</a>
+      <button type="button" class="btn btn-ghost btn-icon lg:hidden" data-menu-open aria-controls="mobile-menu" aria-expanded="false" aria-label="Open menu"><%- icon('menu') %></button>
+    </div>
+  </div>
+  <dialog id="mobile-menu" class="m-0 ml-auto h-dvh max-h-none w-[min(22rem,88vw)] bg-surface p-0 text-body shadow-2xl backdrop:bg-black/50" aria-label="Menu">
+    <div class="flex h-full flex-col">
+      <div class="flex items-center justify-between border-b border-line px-5 py-4">
+        <span class="font-display text-lg text-ink">Menu</span>
+        <button type="button" class="btn btn-ghost btn-icon" data-menu-close aria-label="Close menu"><%- icon('x') %></button>
+      </div>
+      <nav aria-label="Mobile" class="flex-1 overflow-y-auto px-5 py-6">
+        <ul class="grid gap-1">
+          <% for (const item of [...menus.header, ...menus.footer.filter(f => ['/services','/courses','/gallery'].includes(f.href))]) { %>
+            <li><a href="<%= item.href %>" class="block rounded-lg px-3 py-3 font-display text-xl text-ink hover:bg-surface-2" <% if (isActive(item.href)) { %>aria-current="page"<% } %>><%= item.label %></a></li>
+          <% } %>
+        </ul>
+      </nav>
+      <div class="border-t border-line p-5">
+        <a href="/resume" class="btn btn-primary w-full"><%- icon('download', 'size-4') %> Download CV</a>
+      </div>
+    </div>
+  </dialog>
+</header>

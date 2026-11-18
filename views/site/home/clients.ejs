@@ -1,0 +1,12 @@
+<% if (clients.length) { %>
+<section class="container-x py-16" aria-labelledby="sec-clients">
+  <p id="sec-clients" class="text-center mono-label"><%= sec.title %></p>
+  <ul class="logo-strip mt-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
+    <% for (const c of clients) { %>
+      <li><% if (c.url) { %><a href="<%= c.url %>" target="_blank" rel="noopener" class="block"><% } else { %><span class="block"><% } %>
+        <%- img(c.logo, { cls: 'h-10 w-auto', imgCls: 'h-10 w-auto object-contain', sizes: '160px', alt: c.name }) %>
+      <% if (c.url) { %></a><% } else { %></span><% } %></li>
+    <% } %>
+  </ul>
+</section>
+<% } %>

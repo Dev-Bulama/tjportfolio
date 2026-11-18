@@ -1,0 +1,11 @@
+<figure class="card flex h-full flex-col p-7 reveal" style="--i:<%= locals.i || 0 %>">
+  <div class="flex items-center justify-between gap-2"><%- stars(r.rating) %><% if (r.serviceType) { %><span class="chip"><%= r.serviceType.name %></span><% } %></div>
+  <blockquote class="pull-quote mt-6 pl-6 text-[1.15rem] leading-relaxed"><p><%= r.quote %></p></blockquote>
+  <figcaption class="mt-auto flex items-center gap-3 pt-6">
+    <% if (r.photo) { %><%- img(r.photo, { cls: 'size-11 rounded-full overflow-hidden', imgCls: 'size-11 object-cover', sizes: '44px', alt: '' }) %>
+    <% } else { %><span class="grid size-11 place-items-center rounded-full bg-navy font-display text-navy-ink"><%= initials(r.authorName) %></span><% } %>
+    <span class="text-sm"><span class="block font-semibold text-ink"><%= r.authorName %></span><span class="text-muted"><%= [r.authorRole, r.company].filter(Boolean).join(', ') %></span>
+      <% if (r.project) { %><a class="mt-0.5 block text-xs text-gold-ink underline-offset-2 hover:underline" href="/work/<%= r.project.slug %>"><%= r.project.title %></a><% } %></span>
+    <% if (r.logo) { %><%- img(r.logo, { cls: 'ml-auto h-8 w-20', imgCls: 'h-8 w-auto object-contain grayscale', sizes: '80px', alt: r.company || '' }) %><% } %>
+  </figcaption>
+</figure>

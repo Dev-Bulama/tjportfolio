@@ -1,0 +1,12 @@
+# Throwaway MySQL for integration tests: docker compose -f docker-compose.test.yml up -d
+services:
+  mysql-test:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: tjportfolio_test
+      MYSQL_USER: tj
+      MYSQL_PASSWORD: tjdevpass
+      MYSQL_ROOT_PASSWORD: rootdevpass
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports: ["3307:3306"]
+    tmpfs: [/var/lib/mysql]
