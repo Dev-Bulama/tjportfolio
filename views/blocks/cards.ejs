@@ -1,0 +1,14 @@
+<% if (b.items.length) { %>
+<section class="container-x py-12">
+  <% if (b.d.title) { %><h2 class="mb-8 text-display-md"><%= b.d.title %></h2><% } %>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <% b.items.forEach((it, j) => { %>
+      <% if (b.d.source === 'projects') { %><%- include('../partials/site/project-card', { p: it, i: j % 3 }) %>
+      <% } else if (b.d.source === 'trainings') { %><%- include('../partials/site/training-card', { t: it, i: j % 3 }) %>
+      <% } else if (b.d.source === 'testimonials') { %><%- include('../partials/site/review-card', { r: it, i: j % 3 }) %>
+      <% } else if (b.d.source === 'posts') { %><%- include('../partials/site/post-card', { p: it, i: j % 3 }) %>
+      <% } else { %><a href="/certifications/<%= it.slug %>" class="card card-hover flex items-center gap-4 p-5"><%- icon('award','size-8 text-gold') %><span><span class="block font-semibold text-ink"><%= it.name %></span><span class="text-sm text-muted"><%= it.issuer %></span></span></a><% } %>
+    <% }) %>
+  </div>
+</section>
+<% } %>

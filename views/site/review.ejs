@@ -1,0 +1,29 @@
+<section class="container-x max-w-2xl py-16">
+  <% if (locals.invalid) { %>
+    <p class="kicker">Review</p><h1 class="mt-5 text-display-lg">This link has expired or was already used.</h1>
+    <p class="mt-4">Review links work once and expire after a while. If you'd still like to leave a review, <a class="underline decoration-gold underline-offset-4" href="/contact">get in touch</a> and I'll send a fresh link.</p>
+  <% } else if (locals.done) { %>
+    <p class="kicker">Thank you</p><h1 class="mt-5 text-display-lg">Your review has been received.</h1>
+    <p class="mt-4 text-lede">I really appreciate it. It will appear on the site after a quick check — and only if you agreed to publication.</p>
+  <% } else { %>
+    <p class="kicker">Private review link</p>
+    <h1 class="mt-5 text-display-lg">How was it working together<%= subject ? ' on ' + subject : '' %>?</h1>
+    <p class="mt-4">Thank you for taking a couple of minutes, <%= r.name.split(' ')[0] %>. Your review helps other organisations decide whether I'm the right fit.</p>
+    <% if (Object.keys(errors).length) { %><div class="alert alert-danger mt-6 text-sm" role="alert">Please fix the highlighted fields.</div><% } %>
+    <form method="post" class="mt-8 grid gap-5 sm:grid-cols-2">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <fieldset class="sm:col-span-2"><legend class="label">Rating</legend>
+        <div class="mt-2 flex flex-row-reverse justify-end gap-1 text-3xl" role="radiogroup">
+          <% for (let n = 5; n >= 1; n--) { %><input class="peer sr-only" type="radio" id="r<%= n %>" name="rating" value="<%= n %>" <%= String(values.rating) === String(n) ? 'checked' : '' %>><label for="r<%= n %>" class="cursor-pointer text-line hover:text-gold peer-checked:text-gold peer-hover:text-gold" title="<%= n %> star<%= n > 1 ? 's' : '' %>">★<span class="sr-only"><%= n %> star<%= n > 1 ? 's' : '' %></span></label><% } %>
+        </div>
+        <p class="error-text"><%= errors.rating || '' %></p>
+      </fieldset>
+      <%- include('../partials/site/field', { name: 'quote', label: 'Your review', type: 'textarea', required: true, rows: 6, cls: 'sm:col-span-2', placeholder: 'What was the challenge, how did it go, and what changed as a result?' }) %>
+      <%- include('../partials/site/field', { name: 'name', label: 'Name', required: true, autocomplete: 'name' }) %>
+      <%- include('../partials/site/field', { name: 'role', label: 'Role / title', autocomplete: 'organization-title' }) %>
+      <%- include('../partials/site/field', { name: 'company', label: 'Company', autocomplete: 'organization', cls: 'sm:col-span-2' }) %>
+      <label class="flex items-start gap-3 text-sm sm:col-span-2"><input type="hidden" name="consent" value="0"><input type="checkbox" class="checkbox mt-0.5" name="consent" value="1" <%= values.consent === '1' || values.consent === true ? 'checked' : '' %>><span>I agree that this review, my name, role and company may be published on this website. (You can still submit without agreeing — it will then be kept private.)</span></label>
+      <div class="sm:col-span-2"><button class="btn btn-primary">Submit review</button></div>
+    </form>
+  <% } %>
+</section>

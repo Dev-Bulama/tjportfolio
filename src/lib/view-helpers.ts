@@ -47,7 +47,19 @@ export function qs(base: Record<string, unknown>, patch: Record<string, unknown>
   return s ? `?${s}` : "";
 }
 
+export const SKILL_LABELS: Record<string, string> = {
+  languages: "Languages",
+  frameworks: "Frameworks",
+  databases: "Databases",
+  cloud: "Cloud & Infrastructure",
+  ai_data: "AI & Data",
+  methodologies: "Methodologies",
+  training: "Training & Content",
+  tools: "Tools",
+};
+
 export const viewHelpers = {
+  skillLabel: (k: string) => SKILL_LABELS[k] ?? k,
   ...util,
   icon,
   img: imgTag,

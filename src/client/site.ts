@@ -317,6 +317,9 @@ if (tocLinks.length && "IntersectionObserver" in window) {
   });
 }
 
+// ── Print buttons
+for (const b of $$("[data-print-page]")) b.addEventListener("click", () => print());
+
 // ── Share buttons (copy link) ───────────────────────────────────────────────────────────────────
 for (const b of $$("[data-copy-link]")) {
   b.addEventListener("click", async () => {

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @source "../../views";
 @source "../";
+@source inline("{sm:,md:,}grid-cols-{1,2,3,4}");
 
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
@@ -341,3 +342,15 @@
 .rich-editor .prose { max-width: none; }
 .rich-editor .ProseMirror p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: var(--muted); float: left; height: 0; pointer-events: none; }
 .rich-editor .ProseMirror:focus { outline: none; }
+
+/* Work list layout */
+[data-layout="list"] [data-grid] { grid-template-columns: 1fr !important; }
+@media (min-width: 640px) {
+  [data-layout="list"] [data-project] { flex-direction: row; }
+  [data-layout="list"] [data-project] > .zoom-img { width: 280px; flex-shrink: 0; aspect-ratio: 16/10; }
+}
+.aria-pressed\:chip-navy[aria-pressed="true"] { background: var(--navy); color: var(--navy-ink); border-color: var(--navy); }
+:root[data-theme="dark"] .aria-pressed\:chip-navy[aria-pressed="true"] { background: var(--gold); color: #0a1420; border-color: var(--gold); }
+
+summary::-webkit-details-marker { display: none; }
+summary { list-style: none; }

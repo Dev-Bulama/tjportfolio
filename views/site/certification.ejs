@@ -1,0 +1,19 @@
+<%- include('../partials/site/page-hero', { kicker: c.issuer, title: c.name, crumbs: [['Home','/'],['Certifications','/certifications'],[c.name, null]] }) %>
+<div class="container-x grid gap-12 lg:grid-cols-12">
+  <div class="lg:col-span-8">
+    <% if (c.file && c.file.mime === 'application/pdf') { %><iframe src="<%= mediaUrl(c.file) %>" title="<%= c.name %> certificate" class="h-[80vh] w-full rounded-[12px] border border-line"></iframe>
+    <% } else if (c.file) { %><a href="<%= mediaUrl(c.file, 1920) %>" data-lightbox="cert"><%- img(c.file, { cls: 'rounded-[12px] border border-line', sizes: '(min-width:1024px) 760px, 100vw', alt: c.file.alt || c.name + ' certificate' }) %></a>
+    <% } else { %><div class="card grid aspect-[4/3] place-items-center"><%- icon('award','size-20 text-gold') %></div><% } %>
+    <% if (c.description) { %><p class="mt-8 max-w-2xl"><%= c.description %></p><% } %>
+  </div>
+  <aside class="lg:col-span-4">
+    <dl class="card grid gap-5 p-6 text-sm">
+      <div><dt class="mono-label">Issuer</dt><dd class="mt-1 text-ink"><%= c.issuer %></dd></div>
+      <% if (c.issueDate) { %><div><dt class="mono-label">Issued</dt><dd class="mt-1 text-ink"><%= formatDate(c.issueDate) %></dd></div><% } %>
+      <% if (c.expiryDate) { %><div><dt class="mono-label">Expires</dt><dd class="mt-1 text-ink"><%= formatDate(c.expiryDate) %> <% if (isExpired(c.expiryDate)) { %><span class="chip chip-danger ml-2">Expired</span><% } %></dd></div><% } %>
+      <% if (c.credentialId) { %><div><dt class="mono-label">Credential ID</dt><dd class="mt-1 break-all font-mono text-ink"><%= c.credentialId %></dd></div><% } %>
+      <% if (c.verifyUrl) { %><a href="<%= c.verifyUrl %>" target="_blank" rel="noopener" class="btn btn-primary" data-track="verify_click" data-label="<%= c.slug %>"><%- icon('badge-check','size-4') %> Verify with issuer</a><% } %>
+    </dl>
+  </aside>
+</div>
+<%- include('../partials/site/lightbox') %>

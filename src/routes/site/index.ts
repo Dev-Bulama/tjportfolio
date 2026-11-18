@@ -1,17 +1,9 @@
-import { Router, type Request, type Response, type NextFunction, type RequestHandler } from "express";
+import { siteRouter, h } from "./router.js";
 import * as Q from "../../server/public.js";
 import { breadcrumbLd, orgLd, personLd } from "../../server/seo.js";
 import type { Settings } from "../../server/settings.js";
 import type { Img } from "../../server/media.js";
 
-export const siteRouter = Router();
-
-/** Wrap async handlers so rejections reach the error middleware. */
-export const h =
-  (fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>): RequestHandler =>
-  (req, res, next) => {
-    fn(req, res, next).catch(next);
-  };
 
 siteRouter.get(
   "/",
@@ -49,4 +41,8 @@ siteRouter.get(
   }),
 );
 
-export { breadcrumbLd };
+import "./pages.js";
+import "./forms.js";
+import "./custom.js";
+
+export { siteRouter, breadcrumbLd };

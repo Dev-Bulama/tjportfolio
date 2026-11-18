@@ -1,0 +1,52 @@
+<%- include('../partials/site/page-hero', { kicker: t.track ? t.track.name : 'Training', title: t.title, lede: t.summary, crumbs: [['Home','/'],['Training','/training'],[t.title, null]] }) %>
+<% if (t.status !== 'published') { %><div class="container-x"><p class="alert mb-8 text-sm">Preview — not published.</p></div><% } %>
+<div class="container-x grid gap-14 lg:grid-cols-12">
+  <div class="lg:col-span-8">
+    <% if (t.cover) { %><%- img(t.cover, { cls: 'mb-10 rounded-[16px] border border-line', aspect: '16/9', eager: true, sizes: '(min-width:1024px) 760px, 100vw', alt: t.cover.alt || t.title }) %><% } %>
+    <div class="prose"><%- t.bodyHtml %></div>
+    <% if (t.modules.length) { %>
+      <h2 class="mt-14 text-display-md">Curriculum</h2>
+      <ol class="mt-6 divide-y divide-line border-y border-line">
+        <% t.modules.forEach((m, i) => { %><li class="grid gap-2 py-5 sm:grid-cols-[4rem_1fr]"><span class="stat-num text-2xl text-gold">0<%= i + 1 %></span><div><h3 class="font-display text-xl text-ink"><%= m.title %></h3><% if (m.description) { %><p class="mt-1 text-[0.95rem]"><%= m.description %></p><% } %></div></li><% }) %>
+      </ol>
+    <% } %>
+    <% if (t.outcomes.length) { %>
+      <h2 class="mt-14 text-display-md">Outcomes</h2>
+      <ul class="mt-6 grid gap-3 sm:grid-cols-2"><% t.outcomes.forEach(o => { %><li class="card flex gap-3 p-5 text-[0.95rem]"><span class="text-teal"><%- icon('circle-check','size-5') %></span><span class="text-ink"><%= o %></span></li><% }) %></ul>
+    <% } %>
+  </div>
+  <aside class="lg:col-span-4">
+    <div class="sticky top-28 grid gap-6">
+      <dl class="card grid grid-cols-2 gap-5 p-6 text-sm">
+        <div><dt class="mono-label">Format</dt><dd class="mt-1 text-ink"><%= t.format === 'onsite' ? 'On-site' : t.format === 'virtual' ? 'Virtual' : 'Hybrid' %></dd></div>
+        <% if (t.durationLabel) { %><div><dt class="mono-label">Duration</dt><dd class="mt-1 text-ink"><%= t.durationLabel %></dd></div><% } %>
+        <% if (t.participants) { %><div><dt class="mono-label">Cohort</dt><dd class="mt-1 text-ink"><%= t.participants %></dd></div><% } %>
+        <% if (t.location) { %><div><dt class="mono-label">Location</dt><dd class="mt-1 text-ink"><%= t.location %></dd></div><% } %>
+        <% if (t.startDate) { %><div><dt class="mono-label">Date</dt><dd class="mt-1 text-ink"><%= formatDate(t.startDate, 'month') %></dd></div><% } %>
+        <% if (t.client) { %><div class="col-span-2"><dt class="mono-label">Client</dt><dd class="mt-1 text-ink"><%= t.client %></dd></div><% } %>
+      </dl>
+      <div class="card p-6" id="request">
+        <h2 class="font-display text-xl text-ink">Request this training for your team</h2>
+        <div data-form-success tabindex="-1" hidden></div>
+        <form method="post" action="/training/<%= t.slug %>/request" class="mt-5 grid gap-4" data-ajax-form data-event="course_registration">
+          <%- include('../partials/site/antispam') %>
+          <%- include('../partials/site/field', { name: 'name', label: 'Name', required: true, autocomplete: 'name' }) %>
+          <%- include('../partials/site/field', { name: 'email', label: 'Work email', type: 'email', required: true, autocomplete: 'email' }) %>
+          <%- include('../partials/site/field', { name: 'company', label: 'Organisation', autocomplete: 'organization' }) %>
+          <%- include('../partials/site/field', { name: 'seats', label: 'Participants', type: 'number', placeholder: '12' }) %>
+          <%- include('../partials/site/field', { name: 'message', label: 'Anything to tailor?', type: 'textarea', rows: 3 }) %>
+          <button class="btn btn-primary" type="submit">Send request</button>
+          <p class="text-sm" data-form-status role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </aside>
+</div>
+<% if (t.gallery.length) { %>
+<section class="container-x mt-20" aria-labelledby="tg-h"><h2 id="tg-h" class="text-display-md">From the sessions</h2>
+  <ul class="masonry mt-8"><% t.gallery.forEach((g, i) => { %><li><a href="<%= mediaUrl(g.media, 1920) %>" data-lightbox="training" data-caption="<%= g.caption || g.media.caption || '' %>" data-alt="<%= g.media.alt || '' %>" class="zoom-img block overflow-hidden rounded-[12px]"><%- img(g.media, { sizes: '(min-width:1024px) 380px, 50vw', alt: g.media.alt || g.caption || 'Training session photo ' + (i+1) }) %></a></li><% }) %></ul>
+</section>
+<% } %>
+<% if (t.certs.length) { %><section class="container-x mt-16"><p class="mono-label">Related certifications</p><ul class="mt-4 flex flex-wrap gap-2"><% t.certs.forEach(c => { %><li><a class="chip hover:border-gold" href="/certifications/<%= c.slug %>"><%- icon('award','size-3.5') %> <%= c.name %></a></li><% }) %></ul></section><% } %>
+<% if (t.reviews.length) { %><section class="container-x mt-16"><h2 class="text-display-md">Participant feedback</h2><div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3"><% t.reviews.forEach((r, i) => { %><%- include('../partials/site/review-card', { r, i }) %><% }) %></div></section><% } %>
+<%- include('../partials/site/lightbox') %>

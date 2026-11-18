@@ -1,0 +1,4 @@
+<section class="container-x grid items-center gap-10 py-12 md:grid-cols-2">
+  <div class="<%= b.d.side === 'right' ? 'md:order-2' : '' %>"><% if (b.image) { %><%- img(b.image, { cls: 'rounded-[16px] border border-line', aspect: '4/3', sizes: '(min-width:768px) 560px, 100vw' }) %><% } %></div>
+  <div><% if (b.d.title) { %><h2 class="text-display-md"><%= b.d.title %></h2><% } %><div class="prose mt-5"><%- b.html %></div></div>
+</section>

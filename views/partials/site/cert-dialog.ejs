@@ -1,0 +1,10 @@
+<dialog id="cert-<%= c.id %>" class="modal" aria-labelledby="cert-<%= c.id %>-t">
+  <div class="overflow-hidden rounded-2xl bg-surface">
+    <div class="flex items-center gap-3 border-b border-line px-5 py-3"><h2 id="cert-<%= c.id %>-t" class="font-display text-lg text-ink"><%= c.name %></h2><button type="button" class="btn btn-ghost btn-icon ml-auto" data-close-dialog aria-label="Close"><%- icon('x','size-4') %></button></div>
+    <div class="grid max-h-[78vh] place-items-center overflow-auto bg-surface-2 p-4">
+      <% if (c.file.mime === 'application/pdf') { %><iframe src="<%= mediaUrl(c.file) %>" title="<%= c.name %> certificate" class="h-[72vh] w-full rounded" loading="lazy"></iframe>
+      <% } else { %><img src="<%= mediaUrl(c.file, 1920) %>" alt="<%= c.file.alt || c.name + ' certificate' %>" class="max-h-[72vh] w-auto" loading="lazy"><% } %>
+    </div>
+    <% if (c.verifyUrl) { %><div class="border-t border-line px-5 py-3 text-right"><a class="btn btn-primary btn-sm" href="<%= c.verifyUrl %>" target="_blank" rel="noopener" data-track="verify_click" data-label="<%= c.slug %>">Verify with <%= c.issuer %></a></div><% } %>
+  </div>
+</dialog>

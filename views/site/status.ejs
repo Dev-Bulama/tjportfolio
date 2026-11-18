@@ -1,0 +1,26 @@
+<%- include('../partials/site/page-hero', { kicker: 'Support', title: ticket ? 'Ticket ' + ticket.ticketNo : 'Check ticket status', lede: ticket ? null : 'Enter your ticket number and the email you used when you raised it.' }) %>
+<div class="container-x max-w-3xl">
+  <% if (!ticket) { %>
+    <% if (error) { %><div class="alert alert-danger mb-6 text-sm" role="alert"><%= error %></div><% } %>
+    <form method="post" action="/status" class="card grid gap-5 p-6 sm:grid-cols-2">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div class="field"><label class="label" for="ticket">Ticket number</label><input class="input font-mono uppercase" id="ticket" name="ticket" value="<%= ticketNo %>" placeholder="TJ-MR-2026-0001" required></div>
+      <div class="field"><label class="label" for="email">Email</label><input class="input" id="email" name="email" type="email" value="<%= email %>" autocomplete="email" required></div>
+      <div class="sm:col-span-2"><button class="btn btn-primary">Check status</button></div>
+    </form>
+  <% } else { const step = ['new','acknowledged','in_progress','awaiting_client','resolved','closed'].indexOf(ticket.status); %>
+    <div class="card p-6 md:p-8">
+      <div class="flex flex-wrap items-center gap-3"><span class="chip <%= ['resolved','closed'].includes(ticket.status) ? 'chip-teal' : 'chip-gold' %>"><%= labels[ticket.status] %></span><span class="chip capitalize"><%= ticket.priority %> priority</span><span class="text-sm text-muted">Opened <%= formatDateTime(ticket.createdAt) %></span></div>
+      <ol class="mt-8 grid grid-cols-5 gap-2" aria-label="Progress">
+        <% ['Received','Acknowledged','In progress','Awaiting you','Resolved'].forEach((l, i) => { %><li class="text-center text-xs"><span class="block h-1.5 rounded-full <%= i <= Math.min(step, 4) ? 'bg-gold' : 'bg-line' %>"></span><span class="mt-2 block <%= i <= step ? 'text-ink' : 'text-muted' %>"><%= l %></span></li><% }) %>
+      </ol>
+      <dl class="mt-8 grid gap-4 text-sm sm:grid-cols-2"><div><dt class="mono-label">Issue</dt><dd class="text-ink"><%= issues[ticket.issueType] %></dd></div><% if (ticket.affectedUrl) { %><div><dt class="mono-label">URL</dt><dd class="break-all text-ink"><%= ticket.affectedUrl %></dd></div><% } %></dl>
+      <div class="mt-6 rounded-[10px] bg-surface-2 p-4 text-[0.95rem] whitespace-pre-line"><%= ticket.description %></div>
+    </div>
+    <h2 class="mt-12 text-display-sm">Updates</h2>
+    <% if (!updates.length) { %><p class="mt-3 text-muted">No updates yet — you'll get an email when there is one.</p><% } else { %>
+      <ol class="mt-6 border-l border-line"><% updates.forEach(u => { %><li class="relative pb-8 pl-6"><span class="absolute -left-[5px] top-1.5 size-2.5 rounded-full bg-gold"></span><p class="mono-label"><%= formatDateTime(u.createdAt) %><%= u.statusTo ? ' · ' + labels[u.statusTo] : '' %></p><% if (u.body) { %><p class="mt-2 whitespace-pre-line"><%= u.body %></p><% } %></li><% }) %></ol>
+    <% } %>
+    <p class="mt-8 text-sm">Need to add something? Reply to any ticket email, or <a class="underline" href="/contact">contact me</a>.</p>
+  <% } %>
+</div>

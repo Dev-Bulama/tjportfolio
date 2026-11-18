@@ -1,0 +1,15 @@
+<%- include('../partials/site/page-hero', { kicker: 'Testimonials', title: 'In their words', lede: 'Reviews from clients and training participants, published with their consent.' }) %>
+<section class="container-x" data-filter-root>
+  <% if (!reviews.length) { %>
+    <div class="card px-6 py-16 text-center"><p class="font-display text-2xl text-ink">Reviews are being collected.</p><p class="mx-auto mt-3 max-w-md">Every review here comes directly from a client or participant and is published only with their permission.</p></div>
+  <% } else { %>
+    <div class="mb-10 grid gap-4 md:grid-cols-[16rem_1fr]">
+      <div class="card p-6"><p class="mono-label">Overall</p><p class="stat-num mt-2 text-5xl"><%= overall.toFixed(1) %></p><p class="mt-1"><%- stars(overall) %></p><p class="mt-2 text-sm text-muted"><%= reviews.length %> review<%= reviews.length === 1 ? '' : 's' %></p></div>
+      <div class="card p-6"><p class="mono-label">By service</p><ul class="mt-3 grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2"><% agg.forEach(a => { %><li class="flex items-center justify-between gap-3"><span class="text-ink"><%= a.name %></span><span class="text-muted"><%= a.avg.toFixed(1) %> ★ · <%= a.count %></span></li><% }) %></ul></div>
+    </div>
+    <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter by service"><button type="button" class="chip aria-pressed:chip-navy" data-filter="all" aria-pressed="true">All</button><% agg.forEach(a => { %><button type="button" class="chip aria-pressed:chip-navy" data-filter="<%= a.slug %>" aria-pressed="false"><%= a.name %></button><% }) %></div>
+    <div class="masonry" data-grid>
+      <% reviews.forEach((r, i) => { %><div data-item><div data-category="<%= r.serviceType ? r.serviceType.slug : '' %>"><%- include('../partials/site/review-card', { r, i: 0 }) %></div></div><% }) %>
+    </div>
+  <% } %>
+</section>

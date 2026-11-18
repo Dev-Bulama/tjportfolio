@@ -1,0 +1,32 @@
+<%- include('../partials/site/page-hero', { kicker: 'Support', title: 'Request maintenance', lede: 'For existing clients: report a bug, downtime, a content change or a feature request. You will get a ticket number by email and can check progress any time.' }) %>
+<div class="container-x grid gap-14 lg:grid-cols-12">
+  <section class="lg:col-span-8" aria-label="Maintenance request form">
+    <div data-form-success tabindex="-1" <%= locals.success ? '' : 'hidden' %>><%- locals.success || '' %></div>
+    <% if (locals.formError) { %><div class="alert alert-danger mb-6 text-sm" role="alert"><%= formError %></div><% } %>
+    <form method="post" action="/maintenance-request" enctype="multipart/form-data" class="grid gap-5 sm:grid-cols-2" data-ajax-form data-event="maintenance_submit" novalidate <%= locals.success ? 'hidden' : '' %>>
+      <%- include('../partials/site/antispam') %>
+      <%- include('../partials/site/field', { name: 'clientName', label: 'Your name', required: true, autocomplete: 'name' }) %>
+      <%- include('../partials/site/field', { name: 'company', label: 'Company', autocomplete: 'organization' }) %>
+      <%- include('../partials/site/field', { name: 'email', label: 'Email', type: 'email', required: true, autocomplete: 'email' }) %>
+      <%- include('../partials/site/field', { name: 'phone', label: 'Phone', type: 'tel', autocomplete: 'tel' }) %>
+      <%- include('../partials/site/field', { name: 'projectId', label: 'Project / system', type: 'select', options: [...projects.map(p => [p.id, p.title]), ['', 'Other (describe below)']], placeholder: 'Choose the system…' }) %>
+      <%- include('../partials/site/field', { name: 'projectOther', label: 'If other, which system?' }) %>
+      <%- include('../partials/site/field', { name: 'issueType', label: 'Issue type', type: 'select', required: true, options: Object.entries(issueTypes) }) %>
+      <%- include('../partials/site/field', { name: 'priority', label: 'Priority', type: 'select', required: true, options: [['low','Low — whenever convenient'],['normal','Normal'],['high','High — affecting work'],['critical','Critical — site down / security']] }) %>
+      <%- include('../partials/site/field', { name: 'description', label: 'Describe the issue', type: 'textarea', required: true, rows: 7, cls: 'sm:col-span-2', placeholder: 'What happened, what you expected, steps to reproduce, when it started…' }) %>
+      <%- include('../partials/site/field', { name: 'affectedUrl', label: 'Affected URL', type: 'url', placeholder: 'https://', cls: 'sm:col-span-2' }) %>
+      <div class="field sm:col-span-2">
+        <label class="label" for="in-screenshots">Screenshots <span class="font-normal text-muted">(optional — up to 5 images, 5 MB each)</span></label>
+        <input class="text-sm file:mr-3 file:rounded-full file:border file:border-line file:bg-surface file:px-4 file:py-2 file:text-ink" id="in-screenshots" name="screenshots" type="file" multiple accept="image/jpeg,image/png,image/webp" aria-describedby="in-screenshots-err">
+        <p class="error-text" id="in-screenshots-err" data-error-for="screenshots"><%= errors.screenshots || '' %></p>
+      </div>
+      <fieldset class="sm:col-span-2"><legend class="label">Preferred contact method</legend>
+        <div class="mt-2 flex flex-wrap gap-4 text-sm"><% [['email','Email'],['phone','Phone call'],['whatsapp','WhatsApp']].forEach(([v,l]) => { %><label class="flex items-center gap-2"><input type="radio" class="checkbox" name="contactMethod" value="<%= v %>" <%= (values.contactMethod || 'email') === v ? 'checked' : '' %>> <%= l %></label><% }) %></div>
+      </fieldset>
+      <div class="sm:col-span-2"><button class="btn btn-primary" type="submit">Submit request</button></div>
+      <p class="text-sm sm:col-span-2" data-form-status role="status" aria-live="polite"></p>
+    </form>
+  </section>
+  <aside class="lg:col-span-4"><div class="card p-6 text-sm"><h2 class="font-display text-lg text-ink">Already have a ticket?</h2><p class="mt-2">Check its status with your ticket number and email.</p><a class="btn btn-outline btn-sm mt-4" href="/status">Check status</a>
+    <hr class="my-6 border-line"><h3 class="font-semibold text-ink">Response targets</h3><ul class="mt-2 grid gap-1"><li><strong class="text-ink">Critical:</strong> same day</li><li><strong class="text-ink">High:</strong> 1 working day</li><li><strong class="text-ink">Normal:</strong> 2–3 working days</li><li><strong class="text-ink">Low:</strong> within a week</li></ul></div></aside>
+</div>

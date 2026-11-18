@@ -1,0 +1,6 @@
+<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+<div class="hp-field" aria-hidden="true"><label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+<% if (turnstileSiteKey) { %>
+  <div class="cf-turnstile" data-sitekey="<%= turnstileSiteKey %>" data-theme="auto"></div>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer nonce="<%= nonce %>"></script>
+<% } %>

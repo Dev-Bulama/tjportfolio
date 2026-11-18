@@ -102,7 +102,7 @@
               <% if (def.featured) { %><td class="hidden md:table-cell"><%- row.featured ? icon('star','size-4 text-gold fill-current') : '' %></td><% } %>
               <td class="whitespace-nowrap text-right">
                 <details class="relative inline-block text-left" data-menu>
-                  <summary class="btn btn-ghost btn-icon !size-8 !min-h-8 list-none [&::-webkit-details-marker]:hidden" aria-label="Actions for <%= row[def.titleField] %>"><%- icon('ellipsis','size-4') %></summary>
+                  <summary class="btn btn-ghost btn-icon !size-8 !min-h-8 list-none" aria-label="Actions for <%= row[def.titleField] %>"><%- icon('ellipsis','size-4') %></summary>
                   <div class="absolute right-0 z-20 mt-1 w-44 rounded-xl border border-line bg-surface p-1 text-sm shadow-xl">
                     <% if (!query.trash) { %>
                       <a class="block rounded-lg px-3 py-2 hover:bg-surface-2" href="<%= base %>/<%= row.id %>">Edit</a>

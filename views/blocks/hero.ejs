@@ -1,0 +1,12 @@
+<section class="container-x pb-10 pt-10 md:pb-16 md:pt-16 <%= b.d.align === 'center' ? 'text-center' : '' %>">
+  <div class="<%= b.image ? 'grid items-center gap-10 lg:grid-cols-2' : '' %>">
+    <div class="<%= b.d.align === 'center' ? 'mx-auto max-w-3xl' : '' %>">
+      <% if (b.d.kicker) { %><p class="kicker <%= b.d.align === 'center' ? 'justify-center' : '' %>"><%= b.d.kicker %></p><% } %>
+      <% if (i === 0) { %><h1 class="mt-5 text-display-xl"><%= b.d.title || page.title %></h1><% } else { %><h2 class="mt-5 text-display-lg"><%= b.d.title %></h2><% } %>
+      <% if (b.d.subtitle) { %><p class="mt-6 text-lede"><%= b.d.subtitle %></p><% } %>
+      <% if (b.d.ctaLabel && safeUrl(b.d.ctaHref)) { %><a class="btn btn-primary mt-8" href="<%= safeUrl(b.d.ctaHref) %>"><%= b.d.ctaLabel %> <%- icon('arrow-right','size-4') %></a><% } %>
+    </div>
+    <% if (b.image) { %><%- img(b.image, { cls: 'rounded-[16px] border border-line', aspect: '4/3', eager: i === 0, sizes: '(min-width:1024px) 560px, 100vw' }) %><% } %>
+  </div>
+  <hr class="rule-gold mt-10 md:mt-14">
+</section>

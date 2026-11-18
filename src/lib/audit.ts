@@ -32,7 +32,7 @@ export async function audit(
 ): Promise<void> {
   try {
     await db.insert(auditLogs).values({
-      userId: actor?.id ?? null,
+      userId: actor?.id || null,
       userName: actor?.name ?? "system",
       action,
       resource,
