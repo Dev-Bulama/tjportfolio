@@ -138,6 +138,26 @@ every email is stored before sending and retried later if SMTP was down.
 `git push` to `main` → Hostinger rebuilds and restarts automatically. New migrations apply on the next boot.
 For ZIP deploys run `scripts/make-zip.sh` and upload the file it creates.
 
+## Automatic deployments
+
+Once the repository is connected to the Web App in hPanel (steps 5–7, done once), **every push or merge to
+`main` deploys automatically**: Hostinger pulls the code, runs `npm run build`, restarts the app, and
+migrations apply on boot. There is nothing to run by hand.
+
+Two GitHub Actions workflows support this:
+
+- **CI** (`.github/workflows/ci.yml`) runs lint, typecheck, the full test suite against MySQL 8, and a
+  production-only build on every pull request and every push to `main`. Merge pull requests only when CI
+  is green — then what reaches `main` (and therefore the live site) has passed every check.
+  Optional: GitHub → Settings → Branches → add a rule for `main` requiring the **CI / check** status.
+- **Site cron** (`.github/workflows/cron.yml`) calls `/api/cron` every 15 minutes and requests a backup
+  daily around 02:00 UTC. Add two repository secrets (GitHub → Settings → Secrets and variables → Actions):
+  `SITE_URL` (e.g. `https://yourdomain.com`) and `CRON_SECRET` (same value as in hPanel). Until both exist,
+  the workflow does nothing. Use this *or* hPanel's Cron Jobs — not both.
+
+To roll back, revert the bad commit on `main` (or redeploy an earlier deployment from hPanel's
+Deployments tab).
+
 ---
 
 ## Optional: Cloudflare R2 for uploads
