@@ -5,10 +5,15 @@ import { z } from "zod";
 const bool = z
   .union([z.boolean(), z.string()])
   .transform((v) => v === true || v === "true" || v === "1");
+/**
+ * Optional values. Hosting panels that refuse empty variables can use one of these words to mean
+ * "not set": none, null, off, disabled, false, - (case-insensitive).
+ */
+export const UNSET = /^(none|null|off|disabled|false|-)$/i;
 const optional = z
   .string()
   .optional()
-  .transform((v) => (v && v.trim() !== "" ? v.trim() : undefined));
+  .transform((v) => (v && v.trim() !== "" && !UNSET.test(v.trim()) ? v.trim() : undefined));
 
 const schema = z
   .object({

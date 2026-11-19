@@ -74,6 +74,10 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 
 The app validates its environment at boot and logs a clear list of anything missing or invalid.
 
+If hPanel insists on a value for every row, type `none` for the optional ones you don't use
+(`S3_*`, `S3_PUBLIC_URL`, `TURNSTILE_*`, `ADMIN_NOTIFY_EMAIL`, `MAIL_FROM`). `none`, `off`, `disabled`
+and `-` all mean “not set”. Keep `S3_REGION=auto` and `STORAGE_DRIVER=local` unless you use R2/S3.
+
 ### 8. Deploy and check health
 - [ ] Deploy, then open `https://yourdomain.com/api/health`. Expect `{"ok":true,"db":"up",…}`.
 - [ ] If `db` is `down`, the response includes the database error — usually a typo in `DATABASE_*`.

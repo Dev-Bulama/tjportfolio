@@ -161,3 +161,11 @@ describe("validation schemas", () => {
     expect(validate(RESOURCES.pages!, { title: "Admin", slug: "admin/x", status: "draft" }).errors.slug).toMatch(/reserved/);
   });
 });
+
+describe("env placeholders", () => {
+  it("treats 'none' and friends as unset for optional variables", async () => {
+    const { UNSET } = await import("../../src/config/env.js");
+    for (const v of ["none", "NONE", "off", "disabled", "-", "null", "false"]) expect(UNSET.test(v)).toBe(true);
+    expect(UNSET.test("https://bucket.example.com")).toBe(false);
+  });
+});
