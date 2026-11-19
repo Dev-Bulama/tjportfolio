@@ -43,7 +43,7 @@ Things the app is designed around:
 ### 6. Build settings
 - [ ] Framework: **Express** (or “Other/Node.js” if Express isn't listed).
 - [ ] Node version: **22** (20–24 supported).
-- [ ] Build command: `npm run build`
+- [ ] Build command: `npm run build` (if hPanel leaves it as “none”, the app still builds itself after `npm install`)
 - [ ] Start command: `npm start` (entry file, if asked: `dist/server.js`). The app listens on `$PORT`.
 - [ ] Root directory: `/`.
 
