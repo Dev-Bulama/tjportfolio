@@ -1,0 +1,39 @@
+<%- include('../../partials/admin/page-head', { title: 'Media library', subtitle: 'Every upload in one place. Images are resized, converted to WebP and stripped of location data automatically.' }) %>
+<div class="card mb-6 p-4">
+  <label class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-line px-4 py-8 text-center text-sm hover:border-gold" data-uploader data-reload>
+    <%- icon('upload-cloud','size-7 text-gold-ink') %>
+    <span><strong class="text-ink">Drop files here</strong> or click to upload — JPG, PNG, WebP, GIF, AVIF, PDF</span>
+    <input type="file" class="sr-only" multiple accept="image/jpeg,image/png,image/webp,image/gif,image/avif,application/pdf" data-uploader-input>
+  </label>
+  <ul class="mt-3 grid gap-1 text-xs" data-uploader-progress></ul>
+</div>
+<form method="get" class="mb-4 flex flex-wrap items-end gap-3" role="search">
+  <input class="input max-w-xs !py-2 text-sm" name="q" value="<%= q.q || '' %>" placeholder="Search files…" aria-label="Search files">
+  <select name="type" class="select !w-auto !py-2 text-sm" aria-label="Type" data-autosubmit><option value="">All types</option><option value="image" <%= q.type==='image'?'selected':'' %>>Images</option><option value="pdf" <%= q.type==='pdf'?'selected':'' %>>PDFs</option></select>
+  <select name="album" class="select !w-auto !py-2 text-sm" aria-label="Album" data-autosubmit><option value="">Any album</option><% for (const a of albumList) { %><option value="<%= a.id %>" <%= String(q.album)===String(a.id)?'selected':'' %>><%= a.title %></option><% } %></select>
+  <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="checkbox" name="unused" value="1" <%= q.unused==='1'?'checked':'' %> data-autosubmit> Unused</label>
+  <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="checkbox" name="noalt" value="1" <%= q.noalt==='1'?'checked':'' %> data-autosubmit> Missing alt text</label>
+  <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="checkbox" name="trash" value="1" <%= q.trash==='1'?'checked':'' %> data-autosubmit> Trash</label>
+  <button class="btn btn-outline btn-sm">Filter</button>
+  <span class="ml-auto text-sm text-muted"><%= total %> file<%= total === 1 ? '' : 's' %></span>
+</form>
+<% if (!items.length) { %>
+  <div class="card flex flex-col items-center px-6 py-16 text-center"><span class="grid size-14 place-items-center rounded-full bg-surface-2 text-gold-ink"><%- icon('image','size-6') %></span><p class="mt-4 font-display text-xl text-ink">No files here yet</p><p class="mt-1 text-sm text-muted">Upload your first image or PDF above.</p></div>
+<% } else { %>
+<ul class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
+  <% for (const m of items) { %>
+    <li class="card group overflow-hidden">
+      <a href="<%= A('/media/' + m.id) %>" class="block">
+        <div class="grid aspect-square place-items-center bg-surface-2">
+          <% if (isImage(m)) { %><img src="<%= mediaUrl(m, 320) %>" alt="<%= m.alt || '' %>" class="size-full object-cover" loading="lazy" width="320" height="320"><% } else { %><%- icon('file-text','size-10 text-muted') %><% } %>
+        </div>
+        <div class="p-3 text-xs">
+          <p class="truncate font-semibold text-ink"><%= m.originalName %></p>
+          <p class="mt-0.5 flex items-center gap-2 text-muted"><span><%= (m.size/1024/1024).toFixed(2) %> MB</span><% if (usage.get(m.id)) { %><span class="chip !py-0.5">Used ×<%= usage.get(m.id) %></span><% } %><% if (isImage(m) && !m.alt) { %><span class="chip chip-danger !py-0.5">No alt</span><% } %></p>
+        </div>
+      </a>
+    </li>
+  <% } %>
+</ul>
+<% if (pages > 1) { %><nav class="mt-6 flex justify-center gap-2" aria-label="Pagination"><% if (page > 1) { %><a class="btn btn-ghost btn-sm" href="<%= qs(q, { page: page - 1 }) %>">← Prev</a><% } %><span class="self-center text-sm">Page <%= page %> / <%= pages %></span><% if (page < pages) { %><a class="btn btn-ghost btn-sm" href="<%= qs(q, { page: page + 1 }) %>">Next →</a><% } %></nav><% } %>
+<% } %>

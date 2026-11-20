@@ -1,0 +1,14 @@
+<%- include('../partials/site/page-hero', { kicker: a.category ? a.category.name : 'Album', title: a.title, lede: a.description, crumbs: [['Home','/'],['Gallery','/gallery'],[a.title, null]] }) %>
+<section class="container-x">
+  <% if (!a.images.length) { %><p class="py-12 text-center">No photos in this album yet.</p><% } else { %>
+  <ul class="masonry">
+    <% a.images.forEach((m, i) => { %>
+      <li class="reveal" style="--i:<%= i % 3 %>"><figure>
+        <a href="<%= mediaUrl(m, 1920) %>" data-lightbox="album" data-caption="<%= [m.caption, m.credit ? 'Photo: ' + m.credit : ''].filter(Boolean).join(' — ') %>" data-alt="<%= m.alt || '' %>" class="zoom-img block overflow-hidden rounded-[12px]"><%- img(m, { sizes: '(min-width:1024px) 380px, (min-width:640px) 50vw, 100vw', alt: m.alt || a.title + ' photo ' + (i + 1) }) %></a>
+        <% if (m.caption) { %><figcaption class="mt-2 text-sm text-muted"><%= m.caption %></figcaption><% } %>
+      </figure></li>
+    <% }) %>
+  </ul>
+  <% } %>
+</section>
+<%- include('../partials/site/lightbox') %>

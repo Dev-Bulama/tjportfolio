@@ -1,0 +1,22 @@
+<dialog id="media-picker" class="modal" aria-labelledby="mp-title">
+  <div class="flex max-h-[85vh] flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl">
+    <div class="flex items-center gap-3 border-b border-line px-5 py-3">
+      <h2 id="mp-title" class="font-display text-lg text-ink">Media library</h2>
+      <input type="search" class="input ml-auto max-w-xs !py-1.5 text-sm" placeholder="Search…" aria-label="Search media" data-mp-search>
+      <button type="button" class="btn btn-ghost btn-icon" data-mp-close aria-label="Close"><%- icon('x','size-4') %></button>
+    </div>
+    <div class="border-b border-line px-5 py-3">
+      <label class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-line px-4 py-5 text-center text-sm hover:border-gold" data-mp-drop>
+        <%- icon('upload-cloud','size-6 text-gold-ink') %>
+        <span><strong class="text-ink">Upload files</strong> — drag & drop or click. Images (JPG, PNG, WebP, GIF, AVIF) and PDFs.</span>
+        <input type="file" class="sr-only" multiple data-mp-file accept="image/jpeg,image/png,image/webp,image/gif,image/avif,application/pdf">
+      </label>
+      <ul class="mt-2 grid gap-1 text-xs" data-mp-progress></ul>
+    </div>
+    <div class="flex-1 overflow-y-auto p-5"><ul class="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6" data-mp-grid></ul><p class="py-8 text-center text-sm text-muted" data-mp-empty hidden>No files yet. Upload one above.</p></div>
+    <div class="flex items-center justify-between gap-3 border-t border-line px-5 py-3 text-sm">
+      <span class="text-muted" data-mp-selected>Nothing selected</span>
+      <button type="button" class="btn btn-primary btn-sm" data-mp-confirm disabled>Use selected</button>
+    </div>
+  </div>
+</dialog>

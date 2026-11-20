@@ -1,0 +1,12 @@
+<section class="container-x flex min-h-[60vh] flex-col items-start justify-center py-24">
+  <p class="kicker">Error <%= status %></p>
+  <h1 class="mt-6 text-display-xl"><%= status === 404 ? 'This page has moved on.' : status === 403 ? 'Not allowed.' : 'Something went wrong.' %></h1>
+  <p class="mt-6 max-w-xl text-lede">
+    <% if (status === 404) { %>The page you were looking for doesn't exist, or it's no longer published.<% } else if (locals.message) { %><%= message %><% } else { %>An unexpected error occurred. It has been logged — please try again in a moment.<% } %>
+  </p>
+  <div class="mt-10 flex flex-wrap gap-3">
+    <a href="/" class="btn btn-primary"><%- icon('arrow-left', 'size-4') %> Back to home</a>
+    <a href="/work" class="btn btn-outline">View work</a>
+    <a href="/contact" class="btn btn-ghost">Contact</a>
+  </div>
+</section>

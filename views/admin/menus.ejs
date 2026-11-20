@@ -1,0 +1,17 @@
+<%- include('../partials/admin/page-head', { title: 'Menus', subtitle: 'Drag to reorder. Indent an item to nest it under the one above (one level).' }) %>
+<div class="grid gap-6">
+  <% menus.forEach(m => { %>
+    <form method="post" action="<%= A('/menus/' + m.key) %>" class="card p-6" data-menu-builder data-editor>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="items" value="<%= JSON.stringify(m.items) %>" data-menu-input>
+      <div class="flex flex-wrap items-center gap-3"><h2 class="font-display text-xl text-ink"><%= m.name %> menu</h2><span class="chip font-mono"><%= m.key %></span></div>
+      <ol class="mt-5 grid gap-2" data-menu-list></ol>
+      <div class="mt-4 flex flex-wrap items-center gap-2 text-sm">
+        <button type="button" class="btn btn-outline btn-xs" data-menu-add><%- icon('plus','size-3.5') %> Custom link</button>
+        <span class="text-muted">Quick add:</span>
+        <% [['About','/about'],['Services','/services'],['Work','/work'],['Training','/training'],['Courses','/courses'],['Certifications','/certifications'],['Gallery','/gallery'],['Testimonials','/testimonials'],['Insights','/insights'],['Resume','/resume'],['Contact','/contact'],['Request maintenance','/maintenance-request'],['Privacy','/privacy'],['Terms','/terms'], ...pages.map(p => [p.title, '/' + p.slug])].forEach(([l, h]) => { %><button type="button" class="chip hover:border-gold" data-menu-quick="<%= h %>" data-label="<%= l %>"><%= l %></button><% }) %>
+      </div>
+      <button class="btn btn-primary btn-sm mt-6">Save <%= m.name.toLowerCase() %> menu</button>
+    </form>
+  <% }) %>
+</div>

@@ -1,0 +1,12 @@
+<article class="group relative flex flex-col reveal" style="--i:<%= locals.i || 0 %>">
+  <div class="zoom-img overflow-hidden rounded-[12px] border border-line bg-surface-2">
+    <% if (p.cover) { %><%- img(p.cover, { aspect: '3/2', sizes: '(min-width:1024px) 380px, 100vw', alt: p.cover.alt || '' }) %>
+    <% } else { %><div class="flex aspect-[3/2] items-end bg-surface-2 p-5"><span class="font-display text-5xl italic text-gold" aria-hidden="true">“</span></div><% } %>
+  </div>
+  <div class="mt-5 flex items-center gap-3 text-sm text-muted">
+    <% if (p.category) { %><span class="mono-label !text-gold-ink"><%= p.category.name %></span><% } %>
+    <span><%= formatDate(p.publishedAt, 'short') %></span><span aria-hidden="true">·</span><span><%= p.readingMinutes %> min read</span>
+  </div>
+  <h3 class="mt-2 text-display-sm"><a href="/insights/<%= p.slug %>" class="after:absolute after:inset-0 group-hover:text-ink"><%= p.title %></a></h3>
+  <% if (p.excerpt) { %><p class="mt-2 line-clamp-3 text-[0.95rem]"><%= p.excerpt %></p><% } %>
+</article>

@@ -1,0 +1,66 @@
+<article>
+  <header class="container-x pt-10 md:pt-16">
+    <nav aria-label="Breadcrumb" class="mb-8 text-sm text-muted"><ol class="flex flex-wrap items-center gap-2"><li><a class="link-grow hover:text-ink" href="/">Home</a></li><li aria-hidden="true">/</li><li><a class="link-grow hover:text-ink" href="/work">Work</a></li><li aria-hidden="true">/</li><li aria-current="page" class="text-body"><%= p.title %></li></ol></nav>
+    <% if (p.status !== 'published') { %><p class="alert mb-6 text-sm">Preview — this project is a draft and isn't visible to visitors.</p><% } %>
+    <div class="flex flex-wrap items-center gap-3"><% if (p.category) { %><a class="kicker" href="/work?category=<%= p.category.slug %>"><%= p.category.name %></a><% } %><% if (p.projectStatus !== 'completed') { %><span class="chip chip-teal"><%= p.projectStatus === 'ongoing' ? 'Ongoing' : 'Concept' %></span><% } %></div>
+    <h1 class="mt-5 max-w-4xl text-display-xl"><%= p.title %></h1>
+    <% if (p.summary) { %><p class="mt-6 max-w-3xl text-lede"><%= p.summary %></p><% } %>
+    <dl class="mt-10 grid grid-cols-2 gap-6 border-y border-line py-6 text-sm md:grid-cols-4">
+      <% if (p.client) { %><div><dt class="mono-label">Client</dt><dd class="mt-1 text-ink"><%= p.client %></dd></div><% } %>
+      <% if (p.role) { %><div><dt class="mono-label">Role</dt><dd class="mt-1 text-ink"><%= p.role %></dd></div><% } %>
+      <% if (p.year || p.startDate) { %><div><dt class="mono-label">Year</dt><dd class="mt-1 text-ink"><%= p.year || String(p.startDate).slice(0,4) %></dd></div><% } %>
+      <% if (p.startDate && p.endDate) { %><div><dt class="mono-label">Duration</dt><dd class="mt-1 text-ink"><%= periodLabel(p.startDate, p.endDate) %></dd></div><% } %>
+      <div><dt class="mono-label">Status</dt><dd class="mt-1 text-ink capitalize"><%= p.projectStatus %></dd></div>
+    </dl>
+  </header>
+
+  <% if (p.cover) { %><div class="container-x mt-10"><%- img(p.cover, { cls: 'rounded-[16px] border border-line', aspect: '16/9', eager: true, sizes: '(min-width:1200px) 1136px, 100vw', alt: p.cover.alt || p.title }) %></div><% } %>
+
+  <div class="container-x mt-14 grid gap-14 lg:grid-cols-12">
+    <div class="lg:col-span-8">
+      <% if (p.metrics.length) { %>
+        <dl class="mb-12 grid grid-cols-2 gap-px overflow-hidden rounded-[12px] border border-line bg-line sm:grid-cols-<%= Math.min(p.metrics.length, 3) %>">
+          <% for (const m of p.metrics) { %><div class="bg-surface p-6"><dd class="stat-num text-[2.4rem] leading-none text-gold-ink"><%= m.value %></dd><dt class="mt-2 text-sm"><%= m.label %></dt></div><% } %>
+        </dl>
+      <% } %>
+      <div class="prose"><%- p.bodyHtml %></div>
+      <% if (video) { %><div class="mt-12 aspect-video overflow-hidden rounded-[12px] border border-line bg-navy"><button type="button" class="grid size-full place-items-center text-navy-ink" data-embed-src="<%= video %>" data-embed-title="Video: <%= p.title %>"><span class="flex items-center gap-3 font-medium"><%- icon('circle-play','size-10 text-gold') %> Play video</span></button></div><% } %>
+    </div>
+    <aside class="lg:col-span-4">
+      <div class="sticky top-28 grid gap-6">
+        <% if (p.tech.length) { %><div><h2 class="mono-label">Tech stack</h2><ul class="mt-3 flex flex-wrap gap-1.5"><% p.tech.forEach(t => { %><li class="chip"><%= t %></li><% }) %></ul></div><% } %>
+        <% const links = [[safeUrl(p.liveUrl), 'Visit live site', 'external-link'], [safeUrl(p.repoUrl), 'View repository', 'github']].filter(l => l[0]); %>
+        <% if (links.length || safeUrl(p.appStoreUrl) || safeUrl(p.playStoreUrl)) { %>
+          <div class="grid gap-2">
+            <% for (const [href, label, ic] of links) { %><a href="<%= href %>" class="btn btn-outline justify-between" target="_blank" rel="noopener"><%= label %> <%- icon(ic,'size-4') %></a><% } %>
+            <div class="flex flex-wrap gap-2">
+              <% if (safeUrl(p.appStoreUrl)) { %><a href="<%= safeUrl(p.appStoreUrl) %>" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-white"><%- icon('apple','size-5') %><span class="text-left text-[0.65rem] leading-tight">Download on the<br><span class="text-sm font-semibold">App Store</span></span></a><% } %>
+              <% if (safeUrl(p.playStoreUrl)) { %><a href="<%= safeUrl(p.playStoreUrl) %>" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2 text-white"><%- icon('play','size-5') %><span class="text-left text-[0.65rem] leading-tight">Get it on<br><span class="text-sm font-semibold">Google Play</span></span></a><% } %>
+            </div>
+          </div>
+        <% } %>
+        <% if (p.clientLogo && p.client) { %><%- img(p.clientLogo, { cls: 'h-12 w-32', imgCls: 'h-12 w-auto object-contain', sizes: '128px', alt: p.client }) %><% } %>
+        <a href="/contact?subject=<%= encodeURIComponent(p.title) %>" class="btn btn-primary">Discuss a similar project</a>
+      </div>
+    </aside>
+  </div>
+
+  <% if (p.gallery.length) { %>
+  <section class="container-x mt-20" aria-labelledby="gal-h">
+    <h2 id="gal-h" class="text-display-md">Gallery</h2>
+    <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <% p.gallery.forEach((g, i) => { %><li><a href="<%= mediaUrl(g.media, 1920) %>" data-lightbox="project" data-caption="<%= g.caption || g.media.caption || '' %>" data-alt="<%= g.media.alt || '' %>" class="zoom-img block overflow-hidden rounded-[12px] border border-line"><%- img(g.media, { aspect: '4/3', sizes: '(min-width:1024px) 380px, 50vw', alt: g.media.alt || g.caption || p.title + ' screenshot ' + (i + 1) }) %></a><% if (g.caption) { %><p class="mt-2 text-sm text-muted"><%= g.caption %></p><% } %></li><% }) %>
+    </ul>
+  </section>
+  <% } %>
+
+  <% if (p.reviews.length) { %>
+  <section class="container-x mt-20" aria-labelledby="prev-h"><h2 id="prev-h" class="text-display-md">Client feedback</h2><div class="mt-8 grid gap-6 md:grid-cols-2"><% p.reviews.forEach((r, i) => { %><%- include('../partials/site/review-card', { r, i }) %><% }) %></div></section>
+  <% } %>
+
+  <nav class="container-x mt-20 grid gap-4 border-t border-line pt-8 sm:grid-cols-2" aria-label="More projects">
+    <% if (p.prev) { %><a href="/work/<%= p.prev.slug %>" class="group"><span class="mono-label">← Previous</span><span class="mt-1 block font-display text-xl text-ink group-hover:underline"><%= p.prev.title %></span></a><% } else { %><span></span><% } %>
+    <% if (p.next) { %><a href="/work/<%= p.next.slug %>" class="group text-right"><span class="mono-label">Next →</span><span class="mt-1 block font-display text-xl text-ink group-hover:underline"><%= p.next.title %></span></a><% } %>
+  </nav>
+</article>
+<%- include('../partials/site/lightbox') %>

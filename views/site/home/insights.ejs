@@ -1,0 +1,8 @@
+<% if (posts.length) { %>
+<section class="container-x py-20 md:py-28" aria-labelledby="sec-insights">
+  <%- include('../../partials/site/section-head', { kicker: sec.kicker, title: sec.title, link: '/insights', linkLabel: 'All insights', id: 'sec-insights' }) %>
+  <div class="grid gap-10 md:grid-cols-3">
+    <% posts.slice(0,3).forEach((p, i) => { %><%- include('../../partials/site/post-card', { p, i }) %><% }) %>
+  </div>
+</section>
+<% } %>

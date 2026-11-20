@@ -1,0 +1,13 @@
+<h1 class="text-display-md">Sign in</h1>
+<p class="mt-2 text-muted">Welcome back. Use your admin email and password.</p>
+<% if (locals.error) { %><div class="alert alert-danger mt-6 text-sm" role="alert"><%= error %></div><% } %>
+<form method="post" class="mt-8 grid gap-5" novalidate>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <input type="hidden" name="next" value="<%= next %>">
+  <div class="field"><label class="label" for="email">Email</label><input class="input" id="email" name="email" type="email" autocomplete="username" required value="<%= email %>" autofocus></div>
+  <div class="field">
+    <div class="flex items-center justify-between"><label class="label" for="password">Password</label><a href="<%= A('/forgot') %>" class="text-sm text-muted underline-offset-4 hover:underline">Forgot password?</a></div>
+    <input class="input" id="password" name="password" type="password" autocomplete="current-password" required>
+  </div>
+  <button class="btn btn-primary w-full" type="submit">Sign in</button>
+</form>

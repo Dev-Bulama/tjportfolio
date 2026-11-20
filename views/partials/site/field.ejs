@@ -1,0 +1,17 @@
+<%# locals: name, label, type, required, options, help, placeholder, rows, autocomplete, cls, values, errors %>
+<% const type = locals.type || 'text'; const v = (locals.values || {})[name] ?? ''; const err = (locals.errors || {})[name]; const id = 'in-' + name; const desc = [locals.help ? id + '-help' : '', id + '-err'].filter(Boolean).join(' '); %>
+<div class="field <%= locals.cls || '' %>">
+  <label class="label" for="<%= id %>"><%= label %><% if (locals.required) { %> <span class="text-danger" aria-hidden="true">*</span><% } else { %> <span class="font-normal text-muted">(optional)</span><% } %></label>
+  <% if (type === 'select') { %>
+    <select class="select" id="<%= id %>" name="<%= name %>" <%= locals.required ? 'required' : '' %> aria-describedby="<%= desc %>" <%= err ? 'aria-invalid=true' : '' %>>
+      <option value=""><%= locals.placeholder || 'Choose…' %></option>
+      <% for (const o of options) { const [ov, ol] = Array.isArray(o) ? o : [o, o]; %><option value="<%= ov %>" <%= String(v) === String(ov) ? 'selected' : '' %>><%= ol %></option><% } %>
+    </select>
+  <% } else if (type === 'textarea') { %>
+    <textarea class="textarea" id="<%= id %>" name="<%= name %>" rows="<%= locals.rows || 6 %>" <%= locals.required ? 'required' : '' %> placeholder="<%= locals.placeholder || '' %>" aria-describedby="<%= desc %>" <%= err ? 'aria-invalid=true' : '' %>><%= v %></textarea>
+  <% } else { %>
+    <input class="input" id="<%= id %>" name="<%= name %>" type="<%= type %>" value="<%= v %>" <%= locals.required ? 'required' : '' %> placeholder="<%= locals.placeholder || '' %>" autocomplete="<%= locals.autocomplete || 'off' %>" aria-describedby="<%= desc %>" <%= err ? 'aria-invalid=true' : '' %>>
+  <% } %>
+  <% if (locals.help) { %><p class="help" id="<%= id %>-help"><%= help %></p><% } %>
+  <p class="error-text" id="<%= id %>-err" data-error-for="<%= name %>" aria-live="polite"><%= err || '' %></p>
+</div>

@@ -1,0 +1,31 @@
+<%- include('../partials/site/page-hero', { kicker: 'Portfolio', title: 'Selected work', lede: 'Web and mobile apps, websites, AI automation, WordPress plugins, Oracle Database builds and courseware — shipped for businesses, schools and training organisations.' }) %>
+<section class="container-x" data-filter-root data-layout="grid">
+  <% if (!projects.length) { %>
+    <div class="card px-6 py-20 text-center"><p class="font-display text-2xl text-ink">Case studies are on their way.</p><p class="mx-auto mt-3 max-w-md text-body">Projects are being written up with client permission. In the meantime, see the <a class="underline decoration-gold underline-offset-4" href="/training">trainings delivered</a> or <a class="underline decoration-gold underline-offset-4" href="/contact">get in touch</a>.</p></div>
+  <% } else { %>
+  <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]" role="group" aria-label="Filter by category">
+      <button type="button" class="chip shrink-0 aria-pressed:chip-navy" data-filter="all" aria-pressed="true">All</button>
+      <% for (const c of categories) { %><button type="button" class="chip shrink-0 aria-pressed:chip-navy" data-filter="<%= c.slug %>" aria-pressed="false"><%= c.name %></button><% } %>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <label class="sr-only" for="work-search">Search projects</label>
+      <input id="work-search" type="search" class="input !w-48 !py-2 text-sm" placeholder="Search…" data-search>
+      <% if (tags.length) { %><label class="sr-only" for="work-tag">Technology</label><select id="work-tag" class="select !w-44 !py-2 text-sm" data-tag><option value="">Any technology</option><% for (const t of tags) { %><option value="<%= t.toLowerCase() %>"><%= t %></option><% } %></select><% } %>
+      <label class="sr-only" for="work-sort">Sort</label>
+      <select id="work-sort" class="select !w-36 !py-2 text-sm" data-sort><option value="featured">Featured</option><option value="newest">Newest</option><option value="az">A–Z</option></select>
+      <div class="flex rounded-full border border-line p-0.5" role="group" aria-label="Layout">
+        <button type="button" class="btn btn-icon !size-8 !min-h-8 aria-pressed:bg-surface-2" data-view="grid" aria-pressed="true" aria-label="Grid view"><%- icon('layout-grid','size-4') %></button>
+        <button type="button" class="btn btn-icon !size-8 !min-h-8 aria-pressed:bg-surface-2" data-view="list" aria-pressed="false" aria-label="List view"><%- icon('list','size-4') %></button>
+      </div>
+    </div>
+  </div>
+  <h2 class="sr-only">Projects</h2>
+  <p class="sr-only" data-count-label aria-live="polite"></p>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-grid>
+    <% projects.forEach((p, i) => { %><div data-item class="h-full"><%- include('../partials/site/project-card', { p, i: i % 3 }) %></div><% }) %>
+  </div>
+  <p class="py-16 text-center text-body" data-empty hidden>No projects match those filters.</p>
+  <% } %>
+</section>
+<%- include('home/cta', { sec: { kicker: 'Your project', title: 'Have something to build?', intro: '' } }) %>

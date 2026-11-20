@@ -1,0 +1,4 @@
+<% if (page.status !== 'published') { %><div class="container-x pt-6"><p class="alert text-sm">Preview — this page is <%= page.status %>.</p></div><% } %>
+<% if (!blocks.length || blocks[0].type !== 'hero') { %><%- include('../partials/site/page-hero', { title: page.title }) %><% } %>
+<% blocks.forEach((b, i) => { %><%- include('../blocks/' + b.type, { b, i }) %><% }) %>
+<% if (blocks.some(b => b.type === 'gallery')) { %><%- include('../partials/site/lightbox') %><% } %>

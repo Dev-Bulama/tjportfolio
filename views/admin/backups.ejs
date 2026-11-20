@@ -1,0 +1,17 @@
+<%- include('../partials/admin/page-head', { title: 'Backups', subtitle: 'Export everything — content and uploaded files — and restore it later or on another server.' }) %>
+<div class="grid gap-6 lg:grid-cols-2">
+  <section class="card p-6"><h2 class="font-display text-lg text-ink">Export</h2>
+    <p class="mt-2 text-sm">The zip contains <code>data.json</code> (all content, messages, tickets, settings) and every uploaded file. User accounts and passwords are not included.</p>
+    <div class="mt-5 flex flex-wrap gap-2"><a class="btn btn-primary btn-sm" href="<%= A('/backups/export.zip') %>"><%- icon('download','size-4') %> Download full backup (.zip)</a><a class="btn btn-outline btn-sm" href="<%= A('/backups/export.json') %>">Content only (.json)</a></div>
+    <h3 class="mt-8 font-semibold text-ink">Scheduled backups</h3>
+    <p class="mt-1 text-sm">Add <code>&amp;backup=1</code> to your cron URL (e.g. once a day). Backups are written to <%= s3 ? 'your S3/R2 bucket under backups/' : uploadDir + '/backups' %>.<% if (!cron) { %> <strong class="text-danger">Set CRON_SECRET first.</strong><% } %></p>
+  </section>
+  <form method="post" action="<%= A('/backups/import') %>" enctype="multipart/form-data" class="card grid content-start gap-4 border-danger/40 p-6">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <h2 class="font-display text-lg text-ink">Restore</h2>
+    <p class="text-sm">Replaces all current content with the backup. User accounts stay as they are. Owner only.</p>
+    <div class="field"><label class="label" for="bk-file">Backup zip</label><input class="text-sm" type="file" id="bk-file" name="file" accept=".zip,application/zip" required></div>
+    <div class="field"><label class="label" for="bk-confirm">Type RESTORE to confirm</label><input class="input font-mono" id="bk-confirm" name="confirm" autocomplete="off" required pattern="RESTORE"></div>
+    <button class="btn btn-danger btn-sm" data-confirm="Replace all site content with this backup?">Restore backup</button>
+  </form>
+</div>

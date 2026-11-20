@@ -1,0 +1,15 @@
+<%# locals: t, i %>
+<article class="card card-hover group relative flex h-full flex-col p-6 reveal" style="--i:<%= locals.i || 0 %>" data-training data-category="<%= t.track ? t.track.slug : '' %>">
+  <div class="flex items-center justify-between gap-3">
+    <span class="mono-label"><%= t.track ? t.track.name : 'Training' %></span>
+    <span class="chip"><%- icon(t.format === 'virtual' ? 'monitor' : t.format === 'hybrid' ? 'shuffle' : 'map-pin', 'size-3.5') %> <%= t.format === 'onsite' ? 'On-site' : t.format === 'virtual' ? 'Virtual' : 'Hybrid' %></span>
+  </div>
+  <h3 class="mt-4 text-display-sm"><a href="/training/<%= t.slug %>" class="after:absolute after:inset-0"><%= t.title %></a></h3>
+  <p class="mt-3 line-clamp-3 text-[0.95rem]"><%= t.summary %></p>
+  <dl class="mt-auto grid grid-cols-2 gap-3 border-t border-line pt-4 text-sm">
+    <% if (t.durationLabel) { %><div><dt class="mono-label">Duration</dt><dd class="mt-1 text-ink"><%= t.durationLabel %></dd></div><% } %>
+    <% if (t.participants) { %><div><dt class="mono-label">Cohort</dt><dd class="mt-1 text-ink"><%= t.participants %> participants</dd></div><% } %>
+    <% if (t.client) { %><div class="col-span-2"><dt class="mono-label">Client</dt><dd class="mt-1 text-ink"><%= t.client %></dd></div><% } %>
+    <% if (t.startDate) { %><div><dt class="mono-label">Date</dt><dd class="mt-1 text-ink"><%= formatDate(t.startDate, 'month') %></dd></div><% } %>
+  </dl>
+</article>

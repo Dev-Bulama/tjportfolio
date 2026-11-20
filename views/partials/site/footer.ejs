@@ -1,0 +1,46 @@
+<footer class="site-footer mt-24 bg-navy text-[#c9d2de]">
+  <div class="container-x grid gap-12 py-16 md:grid-cols-12">
+    <div class="md:col-span-5">
+      <p class="font-display text-2xl text-navy-ink">Tijani Bulama</p>
+      <p class="mt-3 max-w-sm text-[0.95rem] leading-relaxed"><%= settings.site.footerBlurb %> <%= profile.headline %>.</p>
+      <% if (socials.length) { %>
+      <ul class="mt-6 flex flex-wrap gap-2" aria-label="Social links">
+        <% for (const s of socials) { %>
+          <li><a href="<%= s.url %>" class="grid size-10 place-items-center rounded-full border border-white/15 text-navy-ink transition hover:border-gold hover:text-gold" target="_blank" rel="noopener me" aria-label="<%= s.label %>" data-track="social_click" data-label="<%= s.platform %>"><%- icon(s.icon || s.platform, 'size-[1.05rem]') %></a></li>
+        <% } %>
+      </ul>
+      <% } %>
+    </div>
+    <nav class="md:col-span-3" aria-label="Footer">
+      <p class="mono-label !text-[#9fb0c4]">Explore</p>
+      <ul class="mt-4 grid gap-2 text-[0.95rem]">
+        <% for (const item of [...menus.header.filter(h => h.href !== '/contact'), ...menus.footer]) { %>
+          <li><a class="link-grow hover:text-navy-ink" href="<%= item.href %>"><%= item.label %></a></li>
+        <% } %>
+      </ul>
+    </nav>
+    <div class="md:col-span-4">
+      <% if (settings.site.newsletterEnabled) { %>
+      <p class="mono-label !text-[#9fb0c4]">Newsletter</p>
+      <p class="mt-4 text-[0.95rem]">Occasional, useful notes on engineering, AI automation and training. No spam.</p>
+      <form method="post" action="/newsletter" class="mt-4 flex flex-col gap-2 sm:flex-row" data-ajax-form>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="hp-field" aria-hidden="true"><label>Leave empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <label for="nl-email" class="sr-only">Email address</label>
+        <input id="nl-email" type="email" name="email" required autocomplete="email" placeholder="you@company.com" class="input !border-white/20 !bg-white/5 !text-navy-ink placeholder:!text-[#9fb0c4]">
+        <button class="btn btn-outline !text-navy-ink" type="submit">Subscribe</button>
+        <p class="text-sm sm:basis-full" data-form-status role="status" aria-live="polite"></p>
+      </form>
+      <% } %>
+      <p class="mt-8 text-[0.95rem]">Existing client? <a class="text-navy-ink underline decoration-gold underline-offset-4" href="/maintenance-request">Request maintenance</a> or <a class="text-navy-ink underline decoration-gold underline-offset-4" href="/status">check a ticket</a>.</p>
+    </div>
+  </div>
+  <div class="border-t border-white/10">
+    <div class="container-x flex flex-col items-start justify-between gap-3 py-6 text-sm sm:flex-row sm:items-center">
+      <p>© <%= year() %> Tijani Bulama. <%= profile.location %>.</p>
+      <ul class="flex gap-5">
+        <% for (const item of menus.legal) { %><li><a class="link-grow" href="<%= item.href %>"><%= item.label %></a></li><% } %>
+      </ul>
+    </div>
+  </div>
+</footer>

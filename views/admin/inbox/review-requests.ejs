@@ -1,0 +1,26 @@
+<%- include('../../partials/admin/page-head', { title: 'Review requests', subtitle: 'Send a client a private, single-use link. Submissions arrive as pending testimonials for you to approve.' }) %>
+<div class="grid gap-6 xl:grid-cols-[24rem_minmax(0,1fr)]">
+  <form method="post" action="<%= A('/review-requests') %>" class="card grid content-start gap-4 p-6">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <h2 class="font-display text-lg text-ink">New request</h2>
+    <div class="field"><label class="label" for="rr-name">Client name</label><input class="input" id="rr-name" name="name" required></div>
+    <div class="field"><label class="label" for="rr-email">Client email</label><input class="input" type="email" id="rr-email" name="email" required></div>
+    <div class="field"><label class="label" for="rr-project">Project (optional)</label><select class="select" id="rr-project" name="projectId"><option value="">—</option><% projects.forEach(p => { %><option value="<%= p.id %>"><%= p.title %></option><% }) %></select></div>
+    <div class="field"><label class="label" for="rr-training">Training (optional)</label><select class="select" id="rr-training" name="trainingId"><option value="">—</option><% trainings.forEach(p => { %><option value="<%= p.id %>"><%= p.title %></option><% }) %></select></div>
+    <div class="field"><label class="label" for="rr-type">Service type</label><select class="select" id="rr-type" name="serviceTypeId"><option value="">—</option><% types.forEach(p => { %><option value="<%= p.id %>"><%= p.name %></option><% }) %></select></div>
+    <div class="field"><label class="label" for="rr-msg">Personal message (optional)</label><textarea class="textarea !min-h-20" id="rr-msg" name="message" rows="3"></textarea></div>
+    <div class="field"><label class="label" for="rr-days">Link expires after (days)</label><input class="input" type="number" id="rr-days" name="days" value="30" min="3" max="90"></div>
+    <button class="btn btn-primary btn-sm"><%- icon('send','size-4') %> Send review request</button>
+  </form>
+  <div class="card overflow-x-auto">
+    <% if (!rows.length) { %><div class="px-6 py-16 text-center"><span class="mx-auto grid size-14 place-items-center rounded-full bg-surface-2 text-gold-ink"><%- icon('send','size-6') %></span><p class="mt-4 font-display text-xl text-ink">No requests sent yet</p><p class="mt-1 text-sm text-muted">Start with your three most recent happy clients.</p></div><% } else { %>
+    <table class="table"><thead><tr><th>Client</th><th class="hidden md:table-cell">For</th><th>Sent</th><th>Opened</th><th>Submitted</th><th></th></tr></thead><tbody>
+      <% rows.forEach(({ r, project, training }) => { const expired = new Date(r.expiresAt) < new Date() && !r.usedAt; %>
+        <tr><td><span class="font-semibold text-ink"><%= r.name %></span><span class="block text-xs text-muted"><%= r.email %></span></td><td class="hidden md:table-cell"><%= project || training || '—' %></td>
+          <td class="text-muted"><%= r.sentAt ? timeAgo(r.sentAt) : '—' %></td><td><%- r.openedAt ? icon('check','size-4 text-teal') : '<span class="text-muted">—</span>' %></td>
+          <td><% if (r.testimonialId) { %><a class="chip chip-teal" href="<%= A('/content/testimonials/' + r.testimonialId) %>">Review →</a><% } else if (expired) { %><span class="chip">Expired</span><% } else { %><span class="text-muted">—</span><% } %></td>
+          <td class="text-right"><% if (!r.usedAt && !expired) { %><form method="post" action="<%= A('/review-requests/' + r.id + '/revoke') %>"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn btn-ghost btn-xs" data-confirm="Revoke this link?">Revoke</button></form><% } %></td></tr>
+      <% }) %>
+    </tbody></table><% } %>
+  </div>
+</div>

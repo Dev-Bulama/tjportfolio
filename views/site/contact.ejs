@@ -1,0 +1,45 @@
+<%- include('../partials/site/page-hero', { kicker: 'Contact', title: 'Let\'s talk.', lede: 'Tell me about the product you need built, the process you want automated or the team you want trained. I reply to every enquiry within two working days.' }) %>
+<div class="container-x grid gap-14 lg:grid-cols-12">
+  <section class="lg:col-span-7" aria-labelledby="form-h">
+    <h2 id="form-h" class="sr-only">Contact form</h2>
+    <div data-form-success tabindex="-1" <%= locals.success ? '' : 'hidden' %>><%- locals.success || '' %></div>
+    <% if (locals.formError) { %><div class="alert alert-danger mb-6 text-sm" role="alert"><%= formError %></div><% } %>
+    <% if (Object.keys(errors).length) { %><div class="alert alert-danger mb-6 text-sm" role="alert">Please fix the highlighted fields.</div><% } %>
+    <form method="post" action="/contact" enctype="multipart/form-data" class="grid gap-5 sm:grid-cols-2" data-ajax-form data-event="contact_submit" novalidate <%= locals.success ? 'hidden' : '' %>>
+      <%- include('../partials/site/antispam') %>
+      <input type="hidden" name="page" value="/contact">
+      <%- include('../partials/site/field', { name: 'name', label: 'Your name', required: true, autocomplete: 'name' }) %>
+      <%- include('../partials/site/field', { name: 'email', label: 'Email', type: 'email', required: true, autocomplete: 'email' }) %>
+      <%- include('../partials/site/field', { name: 'phone', label: 'Phone', type: 'tel', autocomplete: 'tel' }) %>
+      <%- include('../partials/site/field', { name: 'company', label: 'Company / organisation', autocomplete: 'organization' }) %>
+      <%- include('../partials/site/field', { name: 'inquiryType', label: 'What is it about?', type: 'select', required: true, options: inquiryTypes, cls: 'sm:col-span-2' }) %>
+      <%- include('../partials/site/field', { name: 'budget', label: 'Budget range', type: 'select', options: budgets, placeholder: 'Select…' }) %>
+      <%- include('../partials/site/field', { name: 'timeline', label: 'Timeline', type: 'select', options: timelines, placeholder: 'Select…' }) %>
+      <%- include('../partials/site/field', { name: 'message', label: 'Message', type: 'textarea', required: true, rows: 7, cls: 'sm:col-span-2', placeholder: 'What are you trying to achieve? Who is it for? Any deadlines or constraints?' }) %>
+      <div class="field sm:col-span-2">
+        <label class="label" for="in-attachment">Attachment <span class="font-normal text-muted">(optional — PDF or image, max 8 MB)</span></label>
+        <input class="text-sm file:mr-3 file:rounded-full file:border file:border-line file:bg-surface file:px-4 file:py-2 file:text-ink" id="in-attachment" name="attachment" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" aria-describedby="in-attachment-err">
+        <p class="error-text" id="in-attachment-err" data-error-for="attachment"><%= errors.attachment || '' %></p>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 sm:col-span-2">
+        <button class="btn btn-primary" type="submit">Send message <%- icon('send','size-4') %></button>
+        <p class="text-sm text-muted">By sending, you agree to the <a class="underline" href="/privacy">privacy notice</a>.</p>
+      </div>
+      <p class="text-sm sm:col-span-2" data-form-status role="status" aria-live="polite"></p>
+    </form>
+  </section>
+  <aside class="grid content-start gap-8 lg:col-span-5">
+    <div class="card grid gap-5 p-7">
+      <% if (contactEmail) { %><a href="mailto:<%= contactEmail %>" class="flex items-center gap-4 text-ink"><span class="grid size-11 place-items-center rounded-full border border-line text-gold-ink"><%- icon('mail','size-5') %></span><span><span class="mono-label block">Email</span><%= contactEmail %></span></a><% } %>
+      <% if (whatsapp) { %><a href="<%= whatsapp %>" target="_blank" rel="noopener" class="flex items-center gap-4 text-ink" data-track="whatsapp_click"><span class="grid size-11 place-items-center rounded-full border border-line text-gold-ink"><%- icon('whatsapp','size-5') %></span><span><span class="mono-label block">WhatsApp</span>Chat now</span></a><% } %>
+      <div class="flex items-center gap-4 text-ink"><span class="grid size-11 place-items-center rounded-full border border-line text-gold-ink"><%- icon('map-pin','size-5') %></span><span><span class="mono-label block">Office</span><%= profile.officeCity %></span></div>
+      <% if (socials.length) { %><ul class="flex flex-wrap gap-2 border-t border-line pt-5"><% socials.forEach(s => { %><li><a class="btn btn-ghost btn-icon border border-line" href="<%= s.url %>" target="_blank" rel="noopener me" aria-label="<%= s.label %>" data-track="social_click" data-label="<%= s.platform %>"><%- icon(s.icon || s.platform,'size-4') %></a></li><% }) %></ul><% } %>
+    </div>
+    <% if (calendly) { %>
+      <div class="card overflow-hidden"><div class="p-6 pb-0"><h2 class="font-display text-xl text-ink">Book a consultation</h2><p class="mt-1 text-sm">Pick a time that suits you.</p></div>
+        <div class="mt-4 aspect-[3/4] bg-surface-2"><button type="button" class="grid size-full place-items-center text-ink" data-embed-src="<%= calendly %>" data-embed-title="Booking calendar"><span class="btn btn-outline"><%- icon('calendar-clock','size-4') %> Load booking calendar</span></button></div>
+      </div>
+    <% } %>
+    <div class="card p-6 text-sm"><p class="font-semibold text-ink">Existing client with an issue?</p><p class="mt-1">Raise a maintenance ticket to get a reference number and track progress.</p><a class="btn btn-outline btn-sm mt-4" href="/maintenance-request">Request maintenance</a></div>
+  </aside>
+</div>

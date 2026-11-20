@@ -1,0 +1,10 @@
+<% if (featuredTrainings.length) { %>
+<section class="bg-surface-2/60 py-20 md:py-28" aria-labelledby="sec-trainings">
+  <div class="container-x">
+    <%- include('../../partials/site/section-head', { kicker: sec.kicker, title: sec.title, intro: sec.intro || 'Hands-on, lab-first programmes for corporate and public-sector teams.', link: '/training', linkLabel: 'All trainings', id: 'sec-trainings' }) %>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <% featuredTrainings.forEach((t, i) => { %><%- include('../../partials/site/training-card', { t, i }) %><% }) %>
+    </div>
+  </div>
+</section>
+<% } %>

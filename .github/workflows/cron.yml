@@ -1,0 +1,37 @@
+# Calls the site's scheduled-jobs endpoint every 15 minutes (DEPLOY.md step 12, option b).
+# Setup: GitHub → Settings → Secrets and variables → Actions → add
+#   SITE_URL     e.g. https://yourdomain.com   (no trailing slash)
+#   CRON_SECRET  the same value as the CRON_SECRET environment variable in hPanel
+# Until both secrets exist this workflow does nothing. Skip it if you use hPanel's own Cron Jobs instead.
+name: Site cron
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      backup:
+        description: "Also create a backup"
+        type: boolean
+        default: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Run scheduled tasks
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          BACKUP: ${{ inputs.backup && 'true' || 'false' }}
+        run: |
+          if [ -z "$SITE_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "SITE_URL / CRON_SECRET secrets not set — skipping."
+            exit 0
+          fi
+          extra=""
+          # Daily backup on the first run after 02:00 UTC, or on demand.
+          if [ "$BACKUP" = "true" ]; then extra="&backup=1"; fi
+          if [ "$(date -u +%H)" = "02" ] && [ "$(date -u +%M)" -lt 15 ]; then extra="&backup=1"; fi
+          curl -fsS --max-time 120 --retry 2 --retry-delay 20 "$SITE_URL/api/cron?secret=$CRON_SECRET&task=all$extra"

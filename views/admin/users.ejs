@@ -1,0 +1,30 @@
+<%- include('../partials/admin/page-head', { title: 'Users & roles', subtitle: 'Owner: everything · Admin: content, inbox and settings · Editor: content only · Viewer: read-only.' }) %>
+<div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+  <div class="card overflow-x-auto"><table class="table">
+    <thead><tr><th>User</th><th>Role</th><th class="hidden md:table-cell">2FA</th><th class="hidden md:table-cell">Last sign-in</th><th>Actions</th></tr></thead>
+    <tbody><% users.forEach(u => { const self = u.id === user.id; %>
+      <tr class="<%= u.isActive ? '' : 'opacity-60' %>">
+        <td><span class="font-semibold text-ink"><%= u.name %></span><%= self ? ' (you)' : '' %><span class="block text-xs text-muted"><%= u.email %></span><% if (!u.isActive) { %><span class="chip mt-1">Deactivated</span><% } %><% if (u.lockedUntil && new Date(u.lockedUntil) > new Date()) { %><span class="chip chip-danger mt-1">Locked</span><% } %></td>
+        <td><% if (self) { %><span class="capitalize"><%= u.role %></span><% } else { %><form method="post" action="<%= A('/users/' + u.id) %>" class="flex gap-1"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="action" value="role"><select name="role" class="select !w-auto !py-1 text-xs" aria-label="Role for <%= u.name %>" data-autosubmit><% roles.forEach(r => { %><option value="<%= r %>" <%= u.role===r?'selected':'' %>><%= r %></option><% }) %></select></form><% } %></td>
+        <td class="hidden md:table-cell"><%- u.totpEnabled ? icon('shield-check','size-4 text-teal') : '<span class="text-muted">off</span>' %></td>
+        <td class="hidden md:table-cell text-muted"><%= u.lastLoginAt ? timeAgo(u.lastLoginAt) : 'never' %></td>
+        <td><form method="post" action="<%= A('/users/' + u.id) %>" class="flex flex-wrap gap-1"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button name="action" value="reset" class="btn btn-ghost btn-xs">Send reset link</button>
+          <% if (!self) { %>
+            <% if (u.lockedUntil && new Date(u.lockedUntil) > new Date()) { %><button name="action" value="unlock" class="btn btn-ghost btn-xs">Unlock</button><% } %>
+            <button name="action" value="<%= u.isActive ? 'deactivate' : 'activate' %>" class="btn btn-ghost btn-xs"><%= u.isActive ? 'Deactivate' : 'Activate' %></button>
+            <button name="action" value="delete" class="btn btn-ghost btn-xs text-danger" data-confirm="Delete <%= u.email %>? Their audit history is kept.">Delete</button>
+          <% } %></form></td>
+      </tr>
+    <% }) %></tbody></table></div>
+  <form method="post" action="<%= A('/users') %>" class="card grid content-start gap-4 p-6">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <h2 class="font-display text-lg text-ink">Add a user</h2>
+    <div class="field"><label class="label" for="u-name">Name</label><input class="input" id="u-name" name="name" required></div>
+    <div class="field"><label class="label" for="u-email">Email</label><input class="input" type="email" id="u-email" name="email" required></div>
+    <div class="field"><label class="label" for="u-role">Role</label><select class="select" id="u-role" name="role"><option value="editor">Editor</option><option value="admin">Admin</option><option value="viewer">Viewer</option></select></div>
+    <div class="field"><label class="label" for="u-pw">Temporary password</label><input class="input font-mono" id="u-pw" name="password" required minlength="12" autocomplete="new-password"><p class="help">12+ characters. They can change it under Account.</p></div>
+    <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="checkbox" name="sendReset" value="1"> Also email them a password-reset link</label>
+    <button class="btn btn-primary btn-sm">Create user</button>
+  </form>
+</div>

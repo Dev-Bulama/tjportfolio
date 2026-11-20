@@ -1,0 +1,52 @@
+# Runs on every push and pull request. Hostinger deploys `main` automatically once the
+# repository is connected in hPanel, so keep `main` green: merge only when this passes.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: tjportfolio_test
+          MYSQL_USER: tj
+          MYSQL_PASSWORD: tjdevpass
+          MYSQL_ROOT_PASSWORD: rootdevpass
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -prootdevpass"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      SESSION_SECRET: ci-only-secret-ci-only-secret-ci-only-secret-ci-only-secret-x
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_NAME: tjportfolio_test
+      DATABASE_USER: tj
+      DATABASE_PASSWORD: tjdevpass
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      # Same install mode Hostinger may use: production deps only, then build without a database.
+      - name: Production build (no dev dependencies, no database)
+        run: |
+          rm -rf node_modules
+          npm ci --omit=dev
+          npm run build
+          test -f dist/server.js && test -f public/assets/app.css

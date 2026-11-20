@@ -1,0 +1,12 @@
+<% if (stats.length) { %>
+<section class="border-y border-line bg-surface" aria-label="<%= sec.title %>">
+  <dl class="container-x grid grid-cols-2 divide-line md:grid-cols-<%= Math.min(stats.length, 4) %> md:divide-x">
+    <% stats.forEach((s, i) => { %>
+      <div class="px-2 py-8 md:px-8 md:py-10 reveal" style="--i:<%= i %>">
+        <dt class="mono-label"><%= s.label %></dt>
+        <dd class="stat-num mt-2 text-[clamp(2.2rem,1.6rem+2vw,3.4rem)] leading-none"><span data-count="<%= s.value %>"><%= formatNumber(s.value) %></span><span class="text-gold-ink"><%= s.suffix || '' %></span></dd>
+      </div>
+    <% }) %>
+  </dl>
+</section>
+<% } %>

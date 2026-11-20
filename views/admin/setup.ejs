@@ -1,0 +1,30 @@
+<p class="kicker">First-run setup</p>
+<h1 class="mt-4 text-display-md">Let's get your site running.</h1>
+<% if (checks.length) { %>
+<ul class="mt-8 grid gap-2">
+  <% for (const c of checks) { %>
+    <li class="flex items-start gap-3 rounded-xl border border-line bg-surface p-3 text-sm">
+      <span class="mt-0.5 <%= c.ok ? 'text-teal' : c.optional ? 'text-gold-ink' : 'text-danger' %>"><%- icon(c.ok ? 'circle-check' : c.optional ? 'circle-alert' : 'circle-x', 'size-5') %></span>
+      <span><strong class="block text-ink"><%= c.label %></strong><span class="text-muted"><%= c.detail %></span></span>
+    </li>
+  <% } %>
+</ul>
+<% } %>
+<% if (locals.errors) { %><div class="alert alert-danger mt-6 text-sm" role="alert"><ul class="list-disc pl-4"><% for (const e of errors) { %><li><%= e %></li><% } %></ul></div><% } %>
+<% if (ready) { %>
+<form method="post" class="mt-8 grid gap-4">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>"><input type="hidden" name="token" value="<%= token %>">
+  <h2 class="text-display-sm">Create the Owner account</h2>
+  <div class="field"><label class="label" for="name">Full name</label><input class="input" id="name" name="name" required autocomplete="name" value="<%= values.name || '' %>"></div>
+  <div class="field"><label class="label" for="email">Email</label><input class="input" id="email" name="email" type="email" required autocomplete="username" value="<%= values.email || '' %>"></div>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div class="field"><label class="label" for="password">Password</label><input class="input" id="password" name="password" type="password" required minlength="12" autocomplete="new-password"></div>
+    <div class="field"><label class="label" for="confirm">Confirm</label><input class="input" id="confirm" name="confirm" type="password" required autocomplete="new-password"></div>
+  </div>
+  <p class="help">12+ characters, mixing three of lowercase, uppercase, numbers and symbols. You'll set up two-factor authentication next.</p>
+  <label class="flex items-start gap-3 rounded-xl border border-line bg-surface p-3 text-sm"><input type="checkbox" class="checkbox mt-0.5" name="seed" value="1" checked><span><strong class="text-ink">Load starter content</strong><br><span class="text-muted">Profile, services, trainings, draft projects and articles. Sample reviews and certifications stay hidden until you replace them.</span></span></label>
+  <button class="btn btn-primary w-full">Create account & continue</button>
+</form>
+<% } else { %>
+  <div class="alert alert-danger mt-6 text-sm">Fix the failing checks above (usually the DATABASE_* environment variables), then reload this page.</div>
+<% } %>

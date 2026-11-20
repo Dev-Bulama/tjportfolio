@@ -1,0 +1,30 @@
+<%- include('../partials/site/page-hero', { kicker: 'Credentials', title: 'Certifications', lede: 'Professional certifications across databases, cloud, virtualization, process improvement and security — each with a link to verify it with the issuer.' }) %>
+<section class="container-x" data-filter-root>
+  <% if (!certs.length) { %>
+    <div class="card px-6 py-16 text-center"><p class="font-display text-2xl text-ink">Certifications are being verified and added.</p><p class="mx-auto mt-3 max-w-md">Each one will link to the issuer's verification page. <a class="underline decoration-gold underline-offset-4" href="/resume">See the resume</a> in the meantime.</p></div>
+  <% } else { %>
+    <% if (cats.length > 1) { %><div class="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter by category"><button type="button" class="chip aria-pressed:chip-navy" data-filter="all" aria-pressed="true">All</button><% cats.forEach(c => { %><button type="button" class="chip aria-pressed:chip-navy" data-filter="<%= c.slug %>" aria-pressed="false"><%= c.name %></button><% }) %></div><% } %>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-grid>
+      <% certs.forEach((c, i) => { const expired = isExpired(c.expiryDate); %>
+        <div data-item><article class="card flex h-full flex-col p-6 reveal" style="--i:<%= i % 3 %>" data-category="<%= c.category ? c.category.slug : '' %>">
+          <div class="flex items-start justify-between gap-4">
+            <% if (c.logo) { %><%- img(c.logo, { cls: 'size-16', imgCls: 'size-16 object-contain', sizes: '64px', alt: c.issuer + ' badge' }) %><% } else { %><span class="grid size-16 place-items-center rounded-full bg-surface-2 text-gold-ink"><%- icon('award','size-7') %></span><% } %>
+            <% if (expired) { %><span class="chip chip-danger">Expired</span><% } else if (c.expiryDate) { %><span class="chip chip-teal">Valid</span><% } %>
+          </div>
+          <h2 class="mt-5 font-display text-xl text-ink"><a href="/certifications/<%= c.slug %>" class="hover:underline"><%= c.name %></a></h2>
+          <p class="mt-1 text-sm text-muted"><%= c.issuer %></p>
+          <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <% if (c.issueDate) { %><div><dt class="mono-label">Issued</dt><dd class="text-ink"><%= formatDate(c.issueDate, 'month') %></dd></div><% } %>
+            <% if (c.expiryDate) { %><div><dt class="mono-label">Expires</dt><dd class="text-ink"><%= formatDate(c.expiryDate, 'month') %></dd></div><% } %>
+            <% if (c.credentialId) { %><div class="col-span-2"><dt class="mono-label">Credential ID</dt><dd class="break-all font-mono text-xs text-ink"><%= c.credentialId %></dd></div><% } %>
+          </dl>
+          <div class="mt-auto flex flex-wrap gap-2 pt-6">
+            <% if (c.file) { %><button type="button" class="btn btn-outline btn-sm" data-open-dialog="cert-<%= c.id %>" data-label="<%= c.slug %>"><%- icon('eye','size-4') %> View certificate</button><% } %>
+            <% if (c.verifyUrl) { %><a href="<%= c.verifyUrl %>" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" data-track="verify_click" data-label="<%= c.slug %>"><%- icon('badge-check','size-4') %> Verify</a><% } %>
+          </div>
+        </article></div>
+        <% if (c.file) { %><%- include('../partials/site/cert-dialog', { c }) %><% } %>
+      <% }) %>
+    </div>
+  <% } %>
+</section>

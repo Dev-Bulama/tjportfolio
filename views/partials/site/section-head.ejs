@@ -1,0 +1,12 @@
+<%# locals: kicker, title, intro, link, linkLabel, id %>
+<div class="mb-10 flex flex-col gap-4 md:mb-14 md:flex-row md:items-end md:justify-between">
+  <div class="max-w-2xl">
+    <% if (locals.kicker) { %><p class="kicker"><%= kicker %></p><% } %>
+    <h2 class="mt-4 text-display-lg" <% if (locals.id) { %>id="<%= id %>"<% } %>><%= title %></h2>
+    <span class="section-title-line reveal" aria-hidden="true"></span>
+    <% if (locals.intro) { %><p class="mt-4 text-lede text-body"><%= intro %></p><% } %>
+  </div>
+  <% if (locals.link) { %>
+    <a href="<%= link %>" class="group inline-flex items-center gap-2 font-medium text-ink"><span class="link-grow"><%= locals.linkLabel || 'View all' %></span><%- icon('arrow-right', 'size-4 transition-transform group-hover:translate-x-1') %></a>
+  <% } %>
+</div>

@@ -1,0 +1,20 @@
+<% if (reviews.length) { %>
+<section class="py-20 md:py-28" aria-labelledby="sec-reviews">
+  <div class="container-x">
+    <%- include('../../partials/site/section-head', { kicker: sec.kicker, title: sec.title, link: '/testimonials', linkLabel: 'All reviews', id: 'sec-reviews' }) %>
+    <div class="relative" data-carousel aria-roledescription="carousel" aria-label="Client testimonials">
+      <div class="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none]" data-carousel-track tabindex="0">
+        <% reviews.forEach((r, i) => { %>
+          <div class="w-[88%] shrink-0 snap-start sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]" role="group" aria-roledescription="slide" aria-label="<%= i + 1 %> of <%= reviews.length %>"><%- include('../../partials/site/review-card', { r, i: 0 }) %></div>
+        <% }) %>
+      </div>
+      <% if (reviews.length > 1) { %>
+      <div class="mt-6 flex gap-2">
+        <button class="btn btn-ghost btn-icon border border-line" data-carousel-prev aria-label="Previous testimonial"><%- icon('arrow-left', 'size-4') %></button>
+        <button class="btn btn-ghost btn-icon border border-line" data-carousel-next aria-label="Next testimonial"><%- icon('arrow-right', 'size-4') %></button>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+<% } %>

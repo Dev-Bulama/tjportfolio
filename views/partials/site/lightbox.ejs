@@ -1,0 +1,11 @@
+<dialog id="lightbox" class="modal !max-w-[min(96vw,1400px)]" aria-label="Image viewer">
+  <div class="relative flex flex-col items-center">
+    <img data-lb-img src="data:," alt="" class="max-h-[80vh] w-auto rounded-lg object-contain">
+    <div class="mt-3 flex w-full items-center justify-between gap-4 text-sm text-[#e6e9ee]">
+      <p data-lb-caption class="flex-1"></p><span data-lb-count class="font-mono text-xs"></span>
+    </div>
+    <button type="button" data-lb-prev class="btn btn-icon absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white" aria-label="Previous image"><%- icon('chevron-left') %></button>
+    <button type="button" data-lb-next class="btn btn-icon absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white" aria-label="Next image"><%- icon('chevron-right') %></button>
+    <button type="button" data-lb-close class="btn btn-icon absolute -top-2 right-0 bg-black/50 text-white" aria-label="Close viewer"><%- icon('x') %></button>
+  </div>
+</dialog>

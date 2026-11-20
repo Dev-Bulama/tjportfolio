@@ -1,0 +1,36 @@
+<%- include('../../partials/admin/page-head', { title: 'Maintenance tickets', subtitle: 'Drag cards between columns to change status. Clients are emailed on every status change.', actions: `<a class="btn btn-outline btn-sm" href="${A('/tickets')}${qs({ view, ...f }, { export: 'csv' })}">${icon('download','size-4')} CSV</a><div class="flex rounded-full border border-line p-0.5"><a class="btn btn-xs ${view==='board'?'bg-surface-2':''}" href="${A('/tickets')}${qs(f, {view:'board'})}">Board</a><a class="btn btn-xs ${view==='table'?'bg-surface-2':''}" href="${A('/tickets')}${qs(f, {view:'table'})}">Table</a></div>` }) %>
+<form method="get" class="mb-5 flex flex-wrap items-center gap-3">
+  <input type="hidden" name="view" value="<%= view %>">
+  <input class="input max-w-xs !py-2 text-sm" name="q" value="<%= f.q %>" placeholder="Ticket, client, company…" aria-label="Search tickets">
+  <select class="select !w-auto !py-2 text-sm" name="priority" data-autosubmit aria-label="Priority"><option value="">Any priority</option><% ['critical','high','normal','low'].forEach(p => { %><option value="<%= p %>" <%= f.priority===p?'selected':'' %>><%= p %></option><% }) %></select>
+  <select class="select !w-auto !py-2 text-sm" name="project" data-autosubmit aria-label="Project"><option value="">Any project</option><% projects.forEach(p => { %><option value="<%= p.id %>" <%= f.project===String(p.id)?'selected':'' %>><%= p.title %></option><% }) %></select>
+  <button class="btn btn-outline btn-sm">Filter</button>
+</form>
+<% const sla = (t) => { const h = (Date.now() - new Date(t.createdAt).getTime()) / 36e5; const limit = { critical: 8, high: 24, normal: 72, low: 168 }[t.priority]; return { h, over: !['resolved','closed'].includes(t.status) && h > limit, label: h < 48 ? Math.round(h) + 'h' : Math.round(h / 24) + 'd' }; }; %>
+<% const pcls = { critical: 'chip-danger', high: 'chip-gold', normal: '', low: '' }; %>
+<% if (!rows.length) { %>
+  <div class="card px-6 py-16 text-center"><span class="mx-auto grid size-14 place-items-center rounded-full bg-surface-2 text-gold-ink"><%- icon('life-buoy','size-6') %></span><p class="mt-4 font-display text-xl text-ink">No tickets</p><p class="mt-1 text-sm text-muted">Requests from <a class="underline" href="/maintenance-request" target="_blank">the maintenance form</a> appear here.</p></div>
+<% } else if (view === 'board') { %>
+  <div class="flex gap-4 overflow-x-auto pb-4" data-kanban>
+    <% statuses.forEach(st => { const list = rows.filter(r => r.t.status === st); %>
+      <section class="w-72 shrink-0 rounded-xl bg-surface-2/60 p-3" aria-label="<%= labels[st] %>">
+        <h2 class="flex items-center justify-between px-1 pb-3 text-sm font-semibold text-ink"><%= labels[st] %><span class="rounded-full bg-surface px-2 text-xs text-muted" data-kanban-count="<%= st %>"><%= list.length %></span></h2>
+        <ul class="grid min-h-24 gap-2" data-kanban-col="<%= st %>">
+          <% list.forEach(({ t, project }) => { const s2 = sla(t); %>
+            <li class="card cursor-grab p-3 text-sm" data-status-url="<%= A('/tickets/' + t.id + '/status') %>">
+              <div class="flex items-center justify-between gap-2"><a class="font-mono text-xs text-ink hover:underline" href="<%= A('/tickets/' + t.id) %>"><%= t.ticketNo %></a><span class="chip <%= pcls[t.priority] %> !py-0.5 !text-[0.68rem]"><%= t.priority %></span></div>
+              <p class="mt-2 line-clamp-2 text-ink"><%= t.description %></p>
+              <p class="mt-2 flex items-center justify-between text-xs text-muted"><span class="truncate"><%= t.company || t.clientName %><%= project ? ' · ' + project : '' %></span><span class="<%= s2.over ? 'font-semibold text-danger' : '' %>" title="Time since opened"><%- icon('clock','size-3 inline') %> <%= s2.label %></span></p>
+            </li>
+          <% }) %>
+        </ul>
+      </section>
+    <% }) %>
+  </div>
+<% } else { %>
+  <div class="card overflow-x-auto"><table class="table">
+    <thead><tr><th>Ticket</th><th>Client</th><th class="hidden md:table-cell">Issue</th><th>Priority</th><th>Status</th><th class="hidden md:table-cell">Age</th><th class="hidden lg:table-cell">Due</th></tr></thead>
+    <tbody><% rows.forEach(({ t, project }) => { const s2 = sla(t); %>
+      <tr><td><a class="font-mono text-ink hover:underline" href="<%= A('/tickets/' + t.id) %>"><%= t.ticketNo %></a></td><td><%= t.clientName %><span class="block text-xs text-muted"><%= [t.company, project || t.projectOther].filter(Boolean).join(' · ') %></span></td><td class="hidden md:table-cell"><%= issues[t.issueType] %></td><td><span class="chip <%= pcls[t.priority] %>"><%= t.priority %></span></td><td><%= labels[t.status] %></td><td class="hidden md:table-cell <%= s2.over ? 'font-semibold text-danger' : '' %>"><%= s2.label %></td><td class="hidden lg:table-cell"><%= t.dueAt ? formatDate(t.dueAt, 'short') : '—' %></td></tr>
+    <% }) %></tbody></table></div>
+<% } %>

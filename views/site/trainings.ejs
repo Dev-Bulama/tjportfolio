@@ -1,0 +1,19 @@
+<%- include('../partials/site/page-hero', { kicker: 'Training', title: 'Trainings delivered', lede: 'Lab-first, instructor-led programmes for corporate IT teams, banks, business schools and public institutions — on-site across Nigeria and the region, or virtual.' }) %>
+<section class="container-x" data-filter-root>
+  <div class="-mx-4 mb-8 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]" role="group" aria-label="Filter by track">
+    <button type="button" class="chip shrink-0 aria-pressed:chip-navy" data-filter="all" aria-pressed="true">All tracks</button>
+    <% for (const t of tracks) { %><button type="button" class="chip shrink-0 aria-pressed:chip-navy" data-filter="<%= t.slug %>" aria-pressed="false"><%= t.name %></button><% } %>
+  </div>
+  <h2 class="sr-only">Trainings</h2>
+  <p class="sr-only" data-count-label aria-live="polite"></p>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-grid>
+    <% trainings.forEach((t, i) => { %><div data-item><%- include('../partials/site/training-card', { t, i: i % 3 }) %></div><% }) %>
+  </div>
+  <p class="py-16 text-center" data-empty hidden>No trainings in this track yet.</p>
+</section>
+<section class="container-x mt-20">
+  <div class="card grid items-center gap-6 p-8 md:grid-cols-[1fr_auto] md:p-10">
+    <div><p class="kicker">For your team</p><h2 class="mt-3 text-display-md">Need a programme tailored to your stack?</h2><p class="mt-3 max-w-2xl">Every corporate training starts with a needs assessment. Tell me who you're training and what they should be able to do afterwards.</p></div>
+    <div class="flex flex-wrap gap-3"><a href="/contact?type=Corporate%20training" class="btn btn-primary">Request a training</a><a href="/courses" class="btn btn-outline">Open courses</a></div>
+  </div>
+</section>

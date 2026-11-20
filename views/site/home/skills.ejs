@@ -1,0 +1,19 @@
+<% if (locals.homeSkills && homeSkills.length) { %>
+<section class="relative overflow-hidden border-y border-line bg-surface/60 py-20 md:py-28" aria-labelledby="sec-skills">
+  <div class="container-x grid gap-12 lg:grid-cols-12">
+    <div class="lg:col-span-4">
+      <p class="kicker"><%= sec.kicker || 'Skills' %></p>
+      <h2 id="sec-skills" class="mt-4 text-display-lg"><%= sec.title %></h2>
+      <span class="section-title-line reveal" aria-hidden="true"></span>
+      <p class="mt-6 text-lede !text-[1.1rem]"><%= sec.intro || 'Eight years of shipping production software, administering Oracle at scale and teaching it to the people who run it.' %></p>
+      <ul class="mt-8 grid grid-cols-2 gap-3 text-sm">
+        <% skillCounts.forEach(([cat, n]) => { %><li class="rounded-xl border border-line bg-surface px-4 py-3"><span class="stat-num block text-2xl"><%= n %></span><span class="text-muted"><%= skillLabel(cat) %></span></li><% }) %>
+      </ul>
+      <a href="/about#stack-h" class="mt-8 inline-flex items-center gap-2 font-medium text-ink"><span class="link-grow">Full toolkit</span><%- icon('arrow-right', 'size-4') %></a>
+    </div>
+    <ul class="grid content-start gap-x-10 gap-y-6 sm:grid-cols-2 lg:col-span-8" role="list">
+      <% homeSkills.forEach((k, i) => { %><%- include('../../partials/site/skill-bar', { k, i: i % 6 }) %><% }) %>
+    </ul>
+  </div>
+</section>
+<% } %>

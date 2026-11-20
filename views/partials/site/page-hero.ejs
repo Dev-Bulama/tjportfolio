@@ -1,0 +1,12 @@
+<%# locals: kicker, title, lede, crumbs [[label, href]] %>
+<section class="container-x pb-10 pt-10 md:pb-14 md:pt-16">
+  <% if (locals.crumbs) { %>
+    <nav aria-label="Breadcrumb" class="mb-8 text-sm text-muted"><ol class="flex flex-wrap items-center gap-2">
+      <% crumbs.forEach(([l, href], i) => { %><li class="flex items-center gap-2"><% if (href) { %><a class="link-grow hover:text-ink" href="<%= href %>"><%= l %></a><% } else { %><span aria-current="page" class="text-body"><%= l %></span><% } %><% if (i < crumbs.length - 1) { %><span aria-hidden="true">/</span><% } %></li><% }) %>
+    </ol></nav>
+  <% } %>
+  <% if (locals.kicker) { %><p class="kicker"><%= kicker %></p><% } %>
+  <h1 class="mt-5 max-w-4xl text-display-xl"><%= title %></h1>
+  <% if (locals.lede) { %><p class="mt-6 max-w-2xl text-lede"><%= lede %></p><% } %>
+  <hr class="rule-gold mt-10 md:mt-14">
+</section>

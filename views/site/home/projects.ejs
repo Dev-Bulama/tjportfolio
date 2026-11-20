@@ -1,0 +1,8 @@
+<% if (featuredProjects.length) { %>
+<section class="container-x py-20 md:py-28" aria-labelledby="sec-projects">
+  <%- include('../../partials/site/section-head', { kicker: sec.kicker, title: sec.title, intro: sec.intro, link: '/work', linkLabel: 'All work', id: 'sec-projects' }) %>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <% featuredProjects.forEach((p, i) => { %><%- include('../../partials/site/project-card', { p, i }) %><% }) %>
+  </div>
+</section>
+<% } %>

@@ -1,0 +1,1 @@
+<% if (b.image) { %><figure class="container-x py-8 <%= b.d.wide ? '' : 'max-w-4xl' %>"><%- img(b.image, { cls: 'rounded-[16px] border border-line', sizes: b.d.wide ? '100vw' : '(min-width:1024px) 900px, 100vw' }) %><% if (b.d.caption) { %><figcaption class="mt-3 text-sm text-muted"><%= b.d.caption %></figcaption><% } %></figure><% } %>

@@ -1,0 +1,15 @@
+<%- include('../../partials/admin/page-head', { title: 'Registrations & requests', subtitle: 'Course registrations and “request this training” enquiries.', actions: `<a class="btn btn-outline btn-sm" href="${A('/registrations')}${qs({ kind }, { export: 'csv' })}">${icon('download','size-4')} Export CSV</a>` }) %>
+<nav class="mb-4 flex gap-1 text-sm"><% [['','All'],['registration','Course registrations'],['training_request','Training requests']].forEach(([v,l]) => { %><a href="<%= A('/registrations') %><%= v ? '?kind=' + v : '' %>" class="rounded-full px-3 py-1.5 <%= kind === v ? 'bg-surface-2 font-semibold text-ink' : 'text-muted hover:text-ink' %>"><%= l %></a><% }) %></nav>
+<% if (!rows.length) { %><div class="card px-6 py-16 text-center"><p class="font-display text-xl text-ink">No registrations yet</p><p class="mt-1 text-sm text-muted">Open a course for registration under Portfolio → Courses.</p></div><% } else { %>
+<div class="card overflow-x-auto"><table class="table">
+  <thead><tr><th>Date</th><th>Person</th><th>For</th><th class="hidden md:table-cell">Seats</th><th>Status & notes</th></tr></thead>
+  <tbody><% rows.forEach(r => { %>
+    <tr><td class="whitespace-nowrap text-muted"><%= formatDate(r.createdAt, 'short') %></td>
+      <td><span class="font-semibold text-ink"><%= r.name %></span><span class="block text-xs"><a class="underline" href="mailto:<%= r.email %>"><%= r.email %></a><%= r.phone ? ' · ' + r.phone : '' %><%= r.company ? ' · ' + r.company : '' %></span><% if (r.message) { %><span class="mt-1 block max-w-md text-xs text-muted"><%= r.message %></span><% } %></td>
+      <td><span class="chip !py-0.5"><%= r.kind === 'training_request' ? 'Request' : 'Course' %></span> <%= r.subject %></td>
+      <td class="hidden md:table-cell"><%= r.seats %></td>
+      <td><form method="post" action="<%= A('/registrations/' + r.id) %>" class="flex flex-wrap items-center gap-2"><input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <select name="status" class="select !w-auto !py-1 text-xs" aria-label="Status"><% ['new','contacted','confirmed','cancelled'].forEach(s => { %><option <%= r.status===s?'selected':'' %>><%= s %></option><% }) %></select>
+        <input name="notes" value="<%= r.notes || '' %>" class="input !w-44 !py-1 text-xs" placeholder="Notes" aria-label="Notes"><button class="btn btn-ghost btn-xs">Save</button></form></td></tr>
+  <% }) %></tbody></table></div>
+<% } %>
