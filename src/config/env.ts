@@ -1,6 +1,11 @@
-import "dotenv/config";
 import path from "node:path";
 import { z } from "zod";
+import { ROOT } from "./paths.js";
+import dotenv from "dotenv";
+
+// Real environment variables always win; .env in the working directory, then the app folder, fill gaps.
+dotenv.config({ quiet: true });
+dotenv.config({ path: path.join(ROOT, ".env"), quiet: true });
 
 const bool = z
   .union([z.boolean(), z.string()])
@@ -80,7 +85,7 @@ export const env = load();
 export const isProd = env.NODE_ENV === "production";
 export const appUrl = env.APP_URL.replace(/\/$/, "");
 /** Absolute directory for uploads. Defaults to ../portfolio-storage (outside the app folder). */
-export const uploadDir = path.resolve(env.UPLOAD_DIR ?? path.join(process.cwd(), "..", "portfolio-storage"));
+export const uploadDir = path.resolve(env.UPLOAD_DIR ?? path.join(ROOT, "..", "portfolio-storage"));
 export const smtpConfigured = Boolean(env.SMTP_USER && env.SMTP_PASSWORD);
 export const turnstileConfigured = Boolean(env.TURNSTILE_SITE_KEY && env.TURNSTILE_SECRET_KEY);
 export const adminBase = `/${env.ADMIN_PATH}`;

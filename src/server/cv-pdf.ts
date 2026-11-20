@@ -1,12 +1,12 @@
-import path from "node:path";
 import PDFDocument from "pdfkit";
 import * as Q from "./public.js";
 import { getSettings } from "./settings.js";
 import { appUrl } from "../config/env.js";
 import { groupBy, periodLabel, pub } from "../lib/util.js";
 import { SKILL_LABELS } from "../lib/view-helpers.js";
+import { fromRoot } from "../config/paths.js";
 
-const font = (pkg: string, file: string) => path.resolve(process.cwd(), "node_modules", pkg, "files", file);
+const font = (pkg: string, file: string) => fromRoot("node_modules", pkg, "files", file);
 const NAVY = "#0F2A47";
 const GOLD = "#B8925A";
 const INK = "#0B1A2B";

@@ -1,5 +1,4 @@
 import fs from "node:fs/promises";
-import path from "node:path";
 import { Router } from "express";
 import { appUrl, env } from "../../config/env.js";
 import * as Q from "../../server/public.js";
@@ -8,6 +7,7 @@ import { escapeHtml, truncate } from "../../lib/util.js";
 import { cached } from "../../lib/cache.js";
 import { logger } from "../../lib/logger.js";
 import { h } from "./router.js";
+import { fromRoot } from "../../config/paths.js";
 
 export const seoRouter = Router();
 const xml = (s: unknown) => escapeHtml(s);
@@ -105,7 +105,7 @@ seoRouter.get("/manifest.webmanifest", h(async (_req, res) => {
 let fonts: Array<{ name: string; data: Buffer; weight: 400 | 600; style: "normal" | "italic" }> | null = null;
 async function loadFonts() {
   if (fonts) return fonts;
-  const f = (pkg: string, file: string) => fs.readFile(path.resolve(process.cwd(), "node_modules", pkg, "files", file));
+  const f = (pkg: string, file: string) => fs.readFile(fromRoot("node_modules", pkg, "files", file));
   fonts = [
     { name: "Fraunces", data: await f("@fontsource/fraunces", "fraunces-latin-600-normal.woff"), weight: 600, style: "normal" },
     { name: "Fraunces", data: await f("@fontsource/fraunces", "fraunces-latin-400-italic.woff"), weight: 400, style: "italic" },

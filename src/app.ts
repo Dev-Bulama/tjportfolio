@@ -15,10 +15,11 @@ import { adminRouter } from "./routes/admin/index.js";
 import { setupRouter } from "./routes/setup.js";
 import { mediaRouter } from "./routes/api/media.js";
 import { seoRouter } from "./routes/site/seo.js";
+import { ROOT } from "./config/paths.js";
 
 export function createApp(): express.Express {
   const app = express();
-  const root = process.cwd();
+  const root = ROOT;
 
   app.set("trust proxy", /^\d+$/.test(env.TRUST_PROXY) ? Number(env.TRUST_PROXY) : env.TRUST_PROXY);
   app.set("view engine", "ejs");
@@ -84,7 +85,9 @@ export function createApp(): express.Express {
       if (!res.locals.settings) await siteContext(req, res, () => {});
       const rm = res.locals.resolveMeta as ((m: object) => unknown) | undefined;
       await res.page("site/error", { status, message: status < 500 ? err.message : undefined, meta: rm?.({ title: status === 403 ? "Not allowed" : "Something went wrong", noindex: true }) }, status);
-    } catch {
+    } catch (renderErr) {
+      // Even the branded error page failed (e.g. database unreachable): log both errors for the host's logs.
+      logger.error({ err: renderErr, original: err.message, path: req.path }, "error page could not be rendered");
       res.status(status).type("text").send("Something went wrong. Please try again in a moment.");
     }
   });

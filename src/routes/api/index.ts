@@ -15,6 +15,9 @@ import { EVENT_NAMES, pruneAnalytics, recordHit, rollup, trackEvent } from "../.
 import { getSettings } from "../../server/settings.js";
 import { purgeTrash } from "../../server/maintenance.js";
 import { createBackup } from "../../server/backup.js";
+import { bootStatus } from "../../server/boot.js";
+import { fromRoot } from "../../config/paths.js";
+import { existsSync } from "node:fs";
 
 export const apiRouter = Router();
 
@@ -27,7 +30,10 @@ apiRouter.get("/health", async (_req, res) => {
     db: db1.ok ? "up" : "down",
     dbVersion: db1.version,
     ...(db1.ok ? {} : { dbError: db1.error }),
-    storage: storage ? { driver: storage.driver, ok: storage.ok } : undefined,
+    storage: storage ? { driver: storage.driver, ok: storage.ok, ...(storage.ok ? {} : { detail: storage.detail }) } : undefined,
+    migrations: bootStatus.migrations,
+    ...(bootStatus.migrationError ? { migrationError: bootStatus.migrationError } : {}),
+    files: { views: existsSync(fromRoot("views", "layouts", "site.ejs")), css: existsSync(fromRoot("public", "assets", "app.css")), js: existsSync(fromRoot("public", "assets", "site.js")) },
     uptime: Math.round(process.uptime()),
     node: process.version,
   });

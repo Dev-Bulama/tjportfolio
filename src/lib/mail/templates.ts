@@ -1,6 +1,6 @@
-import path from "node:path";
 import ejs from "ejs";
 import { appUrl } from "../../config/env.js";
+import { fromRoot } from "../../config/paths.js";
 
 /** Content model for every branded email (one React-Email-style layout, many messages). */
 export type EmailContent = {
@@ -14,7 +14,7 @@ export type EmailContent = {
   footnote?: string;
 };
 
-const layout = path.resolve(process.cwd(), "views/emails/layout.ejs");
+const layout = fromRoot("views", "emails", "layout.ejs");
 
 export async function renderEmail(c: EmailContent): Promise<{ subject: string; html: string; text: string }> {
   const html = await ejs.renderFile(layout, { ...c, appUrl, year: new Date().getUTCFullYear() });

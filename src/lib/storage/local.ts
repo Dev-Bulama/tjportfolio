@@ -2,6 +2,7 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 import type { StorageDriver } from "./types.js";
+import { ROOT } from "../../config/paths.js";
 
 export function safeKey(key: string): string {
   if (!/^[a-z0-9][a-z0-9/_.-]{0,250}$/i.test(key) || key.includes("..") || key.includes("//")) {
@@ -66,7 +67,7 @@ export class LocalStorage implements StorageDriver {
       const probe = path.join(this.root, `.write-test-${process.pid}`);
       await fsp.writeFile(probe, "ok");
       await fsp.rm(probe);
-      const inside = path.resolve(this.root).startsWith(path.resolve(process.cwd()) + path.sep);
+      const inside = path.resolve(this.root).startsWith(ROOT + path.sep);
       return {
         ok: !inside,
         detail: inside

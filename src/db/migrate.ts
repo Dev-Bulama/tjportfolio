@@ -4,8 +4,9 @@ import { migrate } from "drizzle-orm/mysql2/migrator";
 import { db, pool } from "./index.js";
 import { env } from "../config/env.js";
 import { logger } from "../lib/logger.js";
+import { fromRoot } from "../config/paths.js";
 
-export const migrationsFolder = path.resolve(process.cwd(), "drizzle");
+export const migrationsFolder = fromRoot("drizzle");
 const LOCK = "tj_portfolio_migrations";
 
 /**

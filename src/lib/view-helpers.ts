@@ -5,8 +5,9 @@ import * as util from "./util.js";
 import { icon } from "./icons.js";
 import { imgTag, mediaUrl, isImage, fileUrl } from "../server/media.js";
 import { adminUrl } from "../config/env.js";
+import { fromRoot } from "../config/paths.js";
 
-const publicDir = path.resolve(process.cwd(), "public");
+const publicDir = fromRoot("public");
 const versions = new Map<string, string>();
 
 /** Cache-busted asset URL: /assets/app.css?v=<content hash>. */
