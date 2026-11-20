@@ -11,6 +11,11 @@ import { fromRoot } from "../config/paths.js";
 export const migrationsFolder = fromRoot("drizzle");
 const LOCK = "tj_portfolio_migrations";
 const MIGRATIONS_TABLE = "__drizzle_migrations";
+/**
+ * Tables that only hold automatic, regenerable records (page views, rate-limit counters, sessions,
+ * the email queue…). Rows in these never count as "real data" when recovering an interrupted first run.
+ */
+const DISPOSABLE = new Set(["analytics_hits", "analytics_events", "analytics_daily", "rate_limits", "jobs", "login_attempts", "sessions"]);
 
 /** Table names created by our migrations (parsed from the SQL, so this never goes stale). */
 function ourTables(): string[] {
@@ -28,7 +33,8 @@ export function describeDbError(e: unknown): string {
   const reason = err.cause?.sqlMessage ?? err.sqlMessage ?? err.cause?.message;
   const code = err.cause?.code ?? err.code;
   const query = (err.message ?? String(e)).replace(/\s+/g, " ").slice(0, 160);
-  return reason ? `${reason}${code ? ` (${code})` : ""} — while running: ${query}` : query;
+  if (!reason) return (err.message ?? String(e)).slice(0, 500);
+  return `${reason}${code ? ` (${code})` : ""} — while running: ${query}`;
 }
 
 /**
@@ -44,7 +50,7 @@ async function recoverPartialInit(conn: PoolConnection): Promise<void> {
   }
   const leftovers = ourTables().filter((t) => existing.has(t));
   if (!leftovers.length) return;
-  for (const t of leftovers) {
+  for (const t of leftovers.filter((x) => !DISPOSABLE.has(x))) {
     const [rows] = await conn.query(`SELECT COUNT(*) AS n FROM \`${t}\``);
     if (Number((rows as Array<{ n: number }>)[0]?.n ?? 0) > 0) {
       throw new Error(
@@ -53,7 +59,7 @@ async function recoverPartialInit(conn: PoolConnection): Promise<void> {
       );
     }
   }
-  logger.warn({ tables: leftovers.length }, "removing empty tables left by an interrupted first migration");
+  logger.warn({ tables: leftovers.length }, "removing tables left by an interrupted first migration (no content in them)");
   await conn.query("SET FOREIGN_KEY_CHECKS = 0");
   try {
     for (const t of leftovers) await conn.query(`DROP TABLE IF EXISTS \`${t}\``);
