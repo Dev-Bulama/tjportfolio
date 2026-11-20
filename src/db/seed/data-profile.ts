@@ -91,6 +91,7 @@ export const homepageSections = [
   { key: "hero", title: "Hero", kicker: "" },
   { key: "stats", title: "At a glance", kicker: "By the numbers" },
   { key: "services", title: "What I do", kicker: "Services" },
+  { key: "skills", title: "Core expertise", kicker: "Skills" },
   { key: "projects", title: "Selected work", kicker: "Portfolio" },
   { key: "trainings", title: "Trainings delivered", kicker: "Training" },
   { key: "clients", title: "Trusted by teams at", kicker: "Clients & partners" },

@@ -23,6 +23,10 @@ siteRouter.get(
     ]);
     const featuredSkills = about.skills.filter((k) => k.showOnHome);
     const ticker = (featuredSkills.length >= 6 ? featuredSkills : about.skills).map((k) => k.name).slice(0, 18);
+    const homeSkills = (featuredSkills.length >= 6 ? featuredSkills : [...about.skills].sort((a, b) => b.proficiency - a.proficiency)).slice(0, 12);
+    const counts = new Map<string, number>();
+    for (const k of about.skills) counts.set(k.category, (counts.get(k.category) ?? 0) + 1);
+    const skillCounts = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4);
     const socials = res.locals.socials as Array<{ url: string }>;
     const portrait = (res.locals.brand as { portrait?: Img }).portrait;
     const featuredProjects = (projects.filter((p) => p.featured).length ? projects.filter((p) => p.featured) : projects).slice(0, 6);
@@ -30,6 +34,8 @@ siteRouter.get(
     await res.page("site/home", {
       sections,
       ticker,
+      homeSkills,
+      skillCounts,
       stats,
       services,
       featuredProjects,

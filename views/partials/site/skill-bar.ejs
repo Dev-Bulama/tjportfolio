@@ -1,0 +1,9 @@
+<%# locals: k (skill), i %>
+<% const pct = ({ 5: 95, 4: 85, 3: 70, 2: 50, 1: 30 })[k.proficiency] || 60; const level = ({ 5: 'Expert', 4: 'Advanced', 3: 'Proficient', 2: 'Working knowledge', 1: 'Familiar' })[k.proficiency] || ''; %>
+<li class="skill reveal" style="--i:<%= locals.i || 0 %>; --w:<%= pct %>%">
+  <div class="flex items-baseline justify-between gap-3 text-[0.95rem]">
+    <span class="font-medium text-ink"><%= k.name %></span>
+    <span class="mono-label shrink-0 !normal-case !tracking-normal"><%= level %><% if (k.years) { %> · <%= k.years %>y<% } %></span>
+  </div>
+  <div class="skill-track mt-2" role="meter" aria-label="<%= k.name %> proficiency" aria-valuemin="1" aria-valuemax="5" aria-valuenow="<%= k.proficiency %>" aria-valuetext="<%= level %>"><span class="skill-fill"></span></div>
+</li>

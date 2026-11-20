@@ -85,18 +85,13 @@
 
 <% if (skills.length) { %>
 <section class="container-x py-20" aria-labelledby="stack-h">
-  <%- include('../partials/site/section-head', { kicker: 'Toolkit', title: 'Tech stack', id: 'stack-h' }) %>
+  <%- include('../partials/site/section-head', { kicker: 'Toolkit', title: 'Tech stack', intro: 'Grouped by area, with honest self-assessed proficiency.', id: 'stack-h' }) %>
   <div class="grid gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
     <% for (const [cat, list] of skillGroups) { %>
       <div class="reveal">
         <h3 class="mono-label !text-gold-ink"><%= skillLabel(cat) %></h3>
-        <ul class="mt-4 grid gap-3">
-          <% for (const k of list) { %>
-            <li>
-              <div class="flex items-baseline justify-between gap-3 text-[0.95rem]"><span class="text-ink"><%= k.name %></span><span class="sr-only">Proficiency <%= k.proficiency %> of 5</span></div>
-              <div class="mt-1.5 flex gap-1" aria-hidden="true"><% for (let i = 1; i <= 5; i++) { %><span class="h-1 flex-1 rounded-full <%= i <= k.proficiency ? 'bg-gold' : 'bg-line' %>"></span><% } %></div>
-            </li>
-          <% } %>
+        <ul class="mt-4 grid gap-5" role="list">
+          <% list.forEach((k, i) => { %><%- include('../partials/site/skill-bar', { k, i: i % 6 }) %><% }) %>
         </ul>
       </div>
     <% } %>

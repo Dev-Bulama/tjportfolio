@@ -5,6 +5,7 @@ import { runMigrations } from "./db/migrate.js";
 import { pool } from "./db/index.js";
 import { checkStorage } from "./lib/storage/index.js";
 import { bootStatus } from "./server/boot.js";
+import { ensureHomepageSections } from "./db/seed/defaults.js";
 import { ROOT } from "./config/paths.js";
 
 const app = createApp();
@@ -16,6 +17,7 @@ async function boot(): Promise<void> {
   try {
     await runMigrations();
     bootStatus.migrations = "ok";
+    await ensureHomepageSections().catch((e) => logger.warn({ err: (e as Error).message }, "could not add new homepage sections"));
   } catch (e) {
     bootStatus.migrations = "failed";
     bootStatus.migrationError = (e as Error).message.slice(0, 500);

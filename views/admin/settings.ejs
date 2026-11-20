@@ -13,6 +13,9 @@
     <h2 class="font-display text-xl text-ink">Profile</h2>
     <p class="help mt-1">Values in [[double brackets]] are placeholders and are never shown on the public site.</p>
     <fieldset class="mt-6 grid gap-5 md:grid-cols-6" <%= readOnly ? 'disabled' : '' %>>
+      <div class="rounded-xl border border-gold/40 bg-surface-2/40 p-4 md:col-span-6">
+        <%- fld({ name: 'portraitId', label: 'Your portrait (homepage hero & About page)', type: 'image', accept: 'image', help: 'Upload a portrait-orientation photo (about 4:5, at least 900 px wide). It replaces the “TJ” monogram card. Remember to save the profile.' }, s.profile) %>
+      </div>
       <%- fld({ name: 'fullName', label: 'Full name', type: 'text', width: 'half', required: true }, s.profile) %>
       <%- fld({ name: 'displayName', label: 'Display name', type: 'text', width: 'half' }, s.profile) %>
       <%- fld({ name: 'headline', label: 'Headline', type: 'text', max: 300 }, s.profile) %>
@@ -20,7 +23,6 @@
       <%- fld({ name: 'rotatingLines', label: 'Hero typewriter lines — one per line', type: 'textarea', rows: 4, max: 1000, help: 'Typed one after another on the homepage. Keep each under ~60 characters.' }, { ...s.profile, rotatingLines: (s.profile.rotatingLines || []).join('\n') }) %>
       <%- fld({ name: 'shortBio', label: 'Short bio', type: 'textarea', rows: 4, max: 2000 }, s.profile) %>
       <%- fld({ name: 'longBio', label: 'Long bio (About page)', type: 'richtext' }, s.profile) %>
-      <%- fld({ name: 'portraitId', label: 'Portrait', type: 'image', accept: 'image', width: 'half', help: 'Portrait orientation (4:5) works best.' }, s.profile) %>
       <div class="field md:col-span-3"><label class="label" for="sec-ids">Secondary photo IDs</label><input class="input" id="sec-ids" name="secondaryPhotoIds" value="<%= (s.profile.secondaryPhotoIds || []).join(',') %>" placeholder="e.g. 12, 15"><p class="help">Media IDs from the library, comma-separated.</p></div>
       <%- fld({ name: 'location', label: 'Location', type: 'text', width: 'half' }, s.profile) %>
       <%- fld({ name: 'officeCity', label: 'Office city (contact page)', type: 'text', width: 'half' }, s.profile) %>

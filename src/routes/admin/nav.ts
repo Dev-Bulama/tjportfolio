@@ -22,6 +22,7 @@ export const NAV: NavGroup[] = [
   {
     label: "Profile",
     items: [
+      { label: "Profile & portrait", href: "/settings#profile", icon: "user-round", perm: ["view", "settings"] },
       { label: "Experience", href: "/content/experiences", icon: "milestone", perm: ["view", "content"] },
       { label: "Education", href: "/content/education", icon: "school", perm: ["view", "content"] },
       { label: "Skills", href: "/content/skills", icon: "cpu", perm: ["view", "content"] },
