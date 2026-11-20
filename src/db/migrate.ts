@@ -1,6 +1,8 @@
 import path from "node:path";
+import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { migrate } from "drizzle-orm/mysql2/migrator";
+import type { PoolConnection } from "mysql2/promise";
 import { db, pool } from "./index.js";
 import { env } from "../config/env.js";
 import { logger } from "../lib/logger.js";
@@ -8,26 +10,78 @@ import { fromRoot } from "../config/paths.js";
 
 export const migrationsFolder = fromRoot("drizzle");
 const LOCK = "tj_portfolio_migrations";
+const MIGRATIONS_TABLE = "__drizzle_migrations";
+
+/** Table names created by our migrations (parsed from the SQL, so this never goes stale). */
+function ourTables(): string[] {
+  const names = new Set<string>();
+  for (const f of fs.readdirSync(migrationsFolder).filter((n) => n.endsWith(".sql"))) {
+    const sql = fs.readFileSync(path.join(migrationsFolder, f), "utf8");
+    for (const m of sql.matchAll(/CREATE TABLE `([^`]+)`/g)) names.add(m[1]!);
+  }
+  return [...names];
+}
+
+/** Turns a Drizzle/mysql2 error into something readable: the database's own message comes first. */
+export function describeDbError(e: unknown): string {
+  const err = e as { message?: string; cause?: { message?: string; code?: string; sqlMessage?: string }; sqlMessage?: string; code?: string };
+  const reason = err.cause?.sqlMessage ?? err.sqlMessage ?? err.cause?.message;
+  const code = err.cause?.code ?? err.code;
+  const query = (err.message ?? String(e)).replace(/\s+/g, " ").slice(0, 160);
+  return reason ? `${reason}${code ? ` (${code})` : ""} — while running: ${query}` : query;
+}
 
 /**
- * Applies pending migrations. Guarded by a MySQL advisory lock so two cold starts
- * racing each other never run the same migration twice. Idempotent and fast when up to date.
+ * Recovers from an interrupted first migration: when no migration has ever been recorded but some of
+ * our tables already exist, drop them — but only if every one of them is empty. Otherwise explain.
+ */
+async function recoverPartialInit(conn: PoolConnection): Promise<void> {
+  const [tables] = await conn.query("SELECT table_name AS t FROM information_schema.tables WHERE table_schema = DATABASE()");
+  const existing = new Set((tables as Array<{ t: string }>).map((r) => r.t));
+  if (existing.has(MIGRATIONS_TABLE)) {
+    const [rows] = await conn.query(`SELECT COUNT(*) AS n FROM \`${MIGRATIONS_TABLE}\``);
+    if (Number((rows as Array<{ n: number }>)[0]?.n ?? 0) > 0) return; // normal case: already initialised
+  }
+  const leftovers = ourTables().filter((t) => existing.has(t));
+  if (!leftovers.length) return;
+  for (const t of leftovers) {
+    const [rows] = await conn.query(`SELECT COUNT(*) AS n FROM \`${t}\``);
+    if (Number((rows as Array<{ n: number }>)[0]?.n ?? 0) > 0) {
+      throw new Error(
+        `The database already contains table "${t}" with data, but no completed migration is recorded. ` +
+          "Use an empty database for this site (or back it up and empty it), then restart the app.",
+      );
+    }
+  }
+  logger.warn({ tables: leftovers.length }, "removing empty tables left by an interrupted first migration");
+  await conn.query("SET FOREIGN_KEY_CHECKS = 0");
+  try {
+    for (const t of leftovers) await conn.query(`DROP TABLE IF EXISTS \`${t}\``);
+  } finally {
+    await conn.query("SET FOREIGN_KEY_CHECKS = 1");
+  }
+}
+
+/**
+ * Applies pending migrations. Guarded by a database advisory lock so two cold starts racing each other
+ * never run the same migration twice. Idempotent and fast when up to date. Works on MySQL 8 and MariaDB.
  */
 export async function runMigrations(): Promise<{ applied: boolean; ms: number }> {
   const started = Date.now();
   const conn = await pool.getConnection();
   try {
     try {
-      await conn.query(
-        `ALTER DATABASE \`${env.DATABASE_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`,
-      );
+      await conn.query(`ALTER DATABASE \`${env.DATABASE_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
     } catch {
       // Not fatal: shared hosts sometimes deny ALTER DATABASE. Tables still default to utf8mb4.
     }
     const [rows] = await conn.query("SELECT GET_LOCK(?, 30) AS got", [LOCK]);
     if ((rows as Array<{ got: number }>)[0]?.got !== 1) throw new Error("Could not acquire migration lock");
     try {
+      await recoverPartialInit(conn);
       await migrate(db, { migrationsFolder });
+    } catch (e) {
+      throw new Error(describeDbError(e));
     } finally {
       await conn.query("SELECT RELEASE_LOCK(?)", [LOCK]);
     }

@@ -182,6 +182,7 @@ Deployments tab).
 | “Too many connections” from MySQL | Set `DATABASE_POOL_SIZE=3`. |
 | 502 on the first request | Cold start after idle — normal, a few seconds. `/api/health` warms the app. |
 | Uploads disappear after redeploy | `UPLOAD_DIR` points inside the app folder. Move it outside (the dashboard shows a red warning when this happens). |
+| `/api/health` shows `"migrations":"failed"` | `migrationError` gives the database's reason. An interrupted first migration (empty tables but nothing recorded) is cleaned up automatically on the next restart; if a table already holds data, use an empty database. Works on MySQL 8 and MariaDB 10.6+. |
 | `/setup` returns 404 | Either an Owner already exists (expected) or `SETUP_TOKEN` is missing/wrong. |
 | Locked out of admin | Wait 15 minutes (lockout), use a 2FA recovery code, or “Forgot password”. Another Owner/Admin can unlock users under **Users & roles**. |
 | Forms say “session expired” | The page was open for a long time or cookies are blocked; reload and resend. |
