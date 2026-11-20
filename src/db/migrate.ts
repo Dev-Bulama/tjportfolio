@@ -81,7 +81,7 @@ export async function runMigrations(): Promise<{ applied: boolean; ms: number }>
       await recoverPartialInit(conn);
       await migrate(db, { migrationsFolder });
     } catch (e) {
-      throw new Error(describeDbError(e));
+      throw new Error(describeDbError(e), { cause: e });
     } finally {
       await conn.query("SELECT RELEASE_LOCK(?)", [LOCK]);
     }
