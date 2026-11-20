@@ -4,7 +4,14 @@ export const profile = {
   fullName: "Tijani Bulama",
   displayName: "TJ",
   headline: "Senior Full-Stack Engineer · AI Automation Specialist · Corporate Technology Trainer",
-  positioning: "I build software that ships and train the teams who run it.",
+  positioning: "Software that ships. Oracle databases that stay up. Teams that can run both.",
+  /** Hero typewriter: each line is typed, held, then replaced by the next. Editable in Settings → Profile. */
+  rotatingLines: [
+    "I build software that ships.",
+    "I keep Oracle databases fast, secure and always on.",
+    "I put AI agents to work on real problems.",
+    "I train the teams who run it all.",
+  ] as string[],
   shortBio:
     "Tijani Bulama is a senior full-stack software engineer with 8+ years of experience building web, mobile and AI-powered products with Laravel, React, Node.js, Python, PostgreSQL/MySQL and AWS. He is the Founder and CEO of Skillscore IT Solutions & Training, a Lagos-based technology training and software development company, and leads corporate training delivery through Mapelead Limited and Ha-shem Academy. His work spans production software, AI agents and automation, and instructor-led programmes in Oracle Database, cloud, virtualization and Lean Six Sigma for corporate and public-sector teams.",
   longBioHtml: `<p>Tijani Bulama — TJ to most people he works with — is a senior full-stack software engineer who has spent more than eight years turning business problems into software that people actually use. His day-to-day stack is Laravel, React, Node.js and Python on PostgreSQL or MySQL, deployed to AWS or pragmatic managed hosting, and he is as comfortable designing a database schema or a CI pipeline as he is refining an interface. He favours small, well-tested releases, plain documentation and systems that the client's own team can maintain long after the engagement ends.</p>

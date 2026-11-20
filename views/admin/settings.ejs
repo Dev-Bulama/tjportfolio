@@ -16,7 +16,8 @@
       <%- fld({ name: 'fullName', label: 'Full name', type: 'text', width: 'half', required: true }, s.profile) %>
       <%- fld({ name: 'displayName', label: 'Display name', type: 'text', width: 'half' }, s.profile) %>
       <%- fld({ name: 'headline', label: 'Headline', type: 'text', max: 300 }, s.profile) %>
-      <%- fld({ name: 'positioning', label: 'Hero positioning line', type: 'text', max: 300 }, s.profile) %>
+      <%- fld({ name: 'positioning', label: 'Positioning line (used in search results and share images)', type: 'text', max: 300 }, s.profile) %>
+      <%- fld({ name: 'rotatingLines', label: 'Hero typewriter lines — one per line', type: 'textarea', rows: 4, max: 1000, help: 'Typed one after another on the homepage. Keep each under ~60 characters.' }, { ...s.profile, rotatingLines: (s.profile.rotatingLines || []).join('\n') }) %>
       <%- fld({ name: 'shortBio', label: 'Short bio', type: 'textarea', rows: 4, max: 2000 }, s.profile) %>
       <%- fld({ name: 'longBio', label: 'Long bio (About page)', type: 'richtext' }, s.profile) %>
       <%- fld({ name: 'portraitId', label: 'Portrait', type: 'image', accept: 'image', width: 'half', help: 'Portrait orientation (4:5) works best.' }, s.profile) %>

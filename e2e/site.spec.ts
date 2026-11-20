@@ -10,7 +10,10 @@ async function axe(page: Page) {
 test("home renders with hero, stats and services", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Tijani Bulama");
-  await expect(page.getByText("I build software that ships")).toBeVisible();
+  await expect(page.locator("[data-typewriter-text]")).toHaveText("I build software that ships.");
+  // Screen readers get every rotating line at once (the animated copy is aria-hidden).
+  await expect(page.locator("p .sr-only").first()).toContainText("Oracle databases");
+  await expect(page.locator(".oracle-term")).toContainText("gv$instance");
   await expect(page.getByRole("heading", { name: "What I do" })).toBeVisible();
   await expect(page.locator("[data-count]").first()).toBeVisible();
 });

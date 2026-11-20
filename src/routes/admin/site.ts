@@ -66,6 +66,11 @@ siteAdminRouter.post("/settings/:section", ah(async (req, res) => {
         displayName: str(b.displayName, 60),
         headline: str(b.headline, 300),
         positioning: str(b.positioning, 300),
+        rotatingLines: String(b.rotatingLines ?? "")
+          .split(/\r?\n/)
+          .map((l) => str(l, 120))
+          .filter(Boolean)
+          .slice(0, 8),
         shortBio: str(b.shortBio, 2000),
         longBioHtml: sanitizeRich(String(b.longBioHtml ?? "")),
         location: str(b.location, 191),

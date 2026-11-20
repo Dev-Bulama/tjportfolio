@@ -359,3 +359,81 @@ summary { list-style: none; }
 :root[data-font="classic"] body { font-family: var(--font-display); }
 :root[data-font="modern"] h1, :root[data-font="modern"] h2, :root[data-font="modern"] h3, :root[data-font="modern"] h4,
 :root[data-font="modern"] .stat-num, :root[data-font="modern"] .pull-quote { font-family: var(--font-sans); letter-spacing: -0.03em; font-weight: 600; }
+
+/* ── Motion & atmosphere (all disabled under prefers-reduced-motion at the end of this block) ── */
+.hero-aurora { position: absolute; inset: -140px -10% auto -10%; height: 1100px; z-index: -2; contain: strict; pointer-events: none; filter: blur(60px); opacity: .55; }
+.hero-aurora span { position: absolute; border-radius: 999px; animation: aurora 22s ease-in-out infinite alternate; }
+.hero-aurora span:nth-child(1) { width: 42vw; height: 42vw; max-width: 620px; max-height: 620px; left: 52%; top: 4%; background: radial-gradient(circle, color-mix(in oklab, var(--gold) 38%, transparent), transparent 70%); }
+.hero-aurora span:nth-child(2) { width: 36vw; height: 36vw; max-width: 540px; max-height: 540px; left: -6%; top: 30%; background: radial-gradient(circle, color-mix(in oklab, var(--navy) 30%, transparent), transparent 70%); animation-duration: 28s; animation-delay: -6s; }
+.hero-aurora span:nth-child(3) { width: 26vw; height: 26vw; max-width: 380px; max-height: 380px; left: 30%; top: 55%; background: radial-gradient(circle, color-mix(in oklab, var(--teal) 22%, transparent), transparent 70%); animation-duration: 34s; animation-delay: -12s; }
+:root[data-theme="dark"] .hero-aurora { opacity: .7; }
+:root[data-theme="dark"] .hero-aurora span:nth-child(2) { background: radial-gradient(circle, color-mix(in oklab, #3b6ea5 35%, transparent), transparent 70%); }
+@keyframes aurora { 0% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(-6%, 5%, 0) scale(1.12); } 100% { transform: translate3d(5%, -4%, 0) scale(.95); } }
+
+.hero-grid { position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 56px 56px; opacity: .35;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%); }
+
+/* Entrance: transform-only for the name (keeps LCP instant); fade+rise for secondary content. */
+.hero-rise { animation: rise .9s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--d, 0) * 90ms); }
+.hero-in { animation: fadeRise .9s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--d, 0) * 110ms + 120ms); }
+@keyframes rise { from { transform: translateY(18px); } to { transform: none; } }
+@keyframes fadeRise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* Typewriter caret */
+.tw-caret { display: inline-block; width: 2px; height: 1em; margin-left: 3px; vertical-align: -0.12em; background: var(--gold); animation: caret 1s steps(1) infinite; }
+@keyframes caret { 50% { opacity: 0; } }
+
+/* Portrait card: float, rotating ring, tilt (JS sets --rx/--ry) */
+.hero-visual { perspective: 1200px; }
+.hero-visual > .hero-float { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .4s cubic-bezier(.2,.7,.2,1); transform-style: preserve-3d; animation: floaty 7s ease-in-out infinite; }
+@keyframes floaty { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+.hero-ring { position: absolute; z-index: -1; right: -14%; top: -12%; width: 70%; aspect-ratio: 1; border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 70%, color-mix(in oklab, var(--gold) 70%, transparent) 85%, transparent 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px)); mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+  animation: spin 18s linear infinite; opacity: .9; }
+@keyframes spin { to { transform: rotate(1turn); } }
+.monogram::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / .08) 45%, transparent 60%); background-size: 250% 100%; animation: sheen 6s ease-in-out infinite; pointer-events: none; }
+@keyframes sheen { 0% { background-position: 120% 0; } 60%, 100% { background-position: -40% 0; } }
+
+/* Oracle terminal card */
+.oracle-term { position: relative; margin: -3.5rem 0 0 auto; width: min(94%, 24.5rem); border-radius: 12px; background: #0b1622; border: 1px solid rgb(255 255 255 / .08);
+  box-shadow: 0 24px 48px -20px rgb(5 12 20 / .55); overflow: hidden; z-index: 2; animation: fadeRise 1s cubic-bezier(.2,.7,.2,1) .6s both; }
+.oracle-term pre { min-height: 10.6em; white-space: pre; overflow: hidden; }
+@media (min-width: 1024px) { .oracle-term { position: absolute; left: -2.5rem; bottom: -2.25rem; margin: 0; } }
+.term-cursor { display: inline-block; width: .55em; height: 1em; vertical-align: -0.15em; background: #cfae74; animation: caret 1s steps(1) infinite; }
+
+/* Tech ticker */
+.ticker { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.ticker-track { display: flex; width: max-content; gap: 2.5rem; animation: marquee 42s linear infinite; font-size: .9rem; color: var(--body); white-space: nowrap; }
+.ticker-track li { display: inline-flex; align-items: center; gap: .6rem; }
+.ticker:hover .ticker-track, .ticker:focus-within .ticker-track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* Reading progress */
+.scroll-progress { position: fixed; inset: 0 0 auto 0; height: 2px; z-index: 60; transform-origin: 0 50%; transform: scaleX(var(--p, 0)); background: linear-gradient(90deg, var(--gold), var(--teal)); pointer-events: none; }
+
+/* Button shine */
+.btn-shine { position: relative; overflow: hidden; isolation: isolate; }
+.btn-shine::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(110deg, transparent 35%, rgb(255 255 255 / .28) 50%, transparent 65%); transform: translateX(-120%); transition: transform .8s ease; }
+.btn-shine:hover::after, .btn-shine:focus-visible::after { transform: translateX(120%); }
+
+/* Cursor spotlight on cards (JS sets --mx/--my) */
+.card-hover { position: relative; }
+.card-hover::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--gold) 12%, transparent), transparent 60%); }
+.card-hover:hover::before { opacity: 1; }
+
+/* Gold underline that draws in under section titles once revealed */
+.section-title-line { display: block; height: 2px; width: 0; margin-top: 1rem; background: var(--gold); transition: width 1s cubic-bezier(.2,.7,.2,1) .2s; }
+.section-title-line.is-visible { width: 64px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-aurora span, .hero-ring, .hero-visual > .hero-float, .monogram::after, .ticker-track, .tw-caret, .term-cursor, .oracle-term, .hero-rise, .hero-in { animation: none !important; }
+  .hero-visual > .hero-float { transform: none !important; }
+  .ticker-track { flex-wrap: wrap; width: auto; justify-content: center; }
+  .ticker-track li[aria-hidden="true"] { display: none; }
+  .scroll-progress { display: none; }
+}
+@media print { .hero-aurora, .hero-grid, .oracle-term, .ticker, .scroll-progress { display: none !important; } }

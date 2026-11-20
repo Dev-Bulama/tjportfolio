@@ -1,34 +1,86 @@
-<section class="relative overflow-hidden" aria-labelledby="hero-title">
-  <div class="container-x grid items-center gap-12 pb-16 pt-10 md:pt-16 lg:grid-cols-12 lg:gap-10 lg:pb-24">
+<%
+  const lines = (profile.rotatingLines && profile.rotatingLines.length ? profile.rotatingLines : [profile.positioning]).filter(Boolean);
+  const available = profile.availabilityStatus !== 'booked';
+%>
+<section class="hero relative isolate overflow-hidden" aria-labelledby="hero-title">
+  <div class="hero-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="hero-grid" aria-hidden="true"></div>
+
+  <div class="container-x grid items-center gap-14 pb-14 pt-10 md:pt-16 lg:grid-cols-12 lg:gap-10 lg:pb-20">
     <div class="lg:col-span-7">
-      <p class="kicker"><%= profile.location %></p>
-      <h1 id="hero-title" class="mt-6 text-display-xl"><%= profile.fullName %><span class="text-gold-ink">.</span></h1>
-      <p class="mt-6 max-w-2xl font-display text-[clamp(1.35rem,1.1rem+1vw,2rem)] italic leading-snug text-ink"><%= profile.positioning %></p>
-      <p class="mt-5 max-w-xl text-[1.05rem] text-body"><%= profile.headline %></p>
-      <div class="mt-9 flex flex-wrap gap-3">
-        <a href="/contact" class="btn btn-primary">Hire me / Book a consultation <%- icon('arrow-right', 'size-4') %></a>
+      <p class="kicker hero-in" style="--d:0"><%= profile.location %></p>
+
+      <h1 id="hero-title" class="mt-6 text-display-xl">
+        <%= profile.fullName %><span class="text-gold-ink">.</span>
+      </h1>
+
+      <%# Typewriter: the first line is rendered on the server (no JS needed, no LCP delay); JS rotates the rest. %>
+      <p class="mt-6 min-h-[2.75em] max-w-2xl font-display text-[clamp(1.4rem,1.1rem+1.2vw,2.15rem)] italic leading-snug text-ink">
+        <span class="sr-only"><%= lines.join(' ') %></span>
+        <span aria-hidden="true" data-typewriter='<%= JSON.stringify(lines) %>'><span data-typewriter-text><%= lines[0] %></span><span class="tw-caret"></span></span>
+      </p>
+
+      <p class="mt-5 max-w-xl text-[1.05rem] text-body hero-in" style="--d:3"><%= profile.headline %></p>
+
+      <div class="mt-9 flex flex-wrap gap-3 hero-in" style="--d:4">
+        <a href="/contact" class="btn btn-primary btn-shine">Hire me / Book a consultation <%- icon('arrow-right', 'size-4') %></a>
         <a href="/work" class="btn btn-outline">View work</a>
       </div>
-      <p class="mt-8 inline-flex items-center gap-2 text-sm text-body">
-        <span class="relative flex size-2.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full <%= profile.availabilityStatus === 'available' ? 'bg-teal' : 'bg-gold' %> opacity-60"></span><span class="relative inline-flex size-2.5 rounded-full <%= profile.availabilityStatus === 'available' ? 'bg-teal' : 'bg-gold' %>"></span></span>
-        <%= profile.availabilityStatus === 'booked' && profile.bookedUntil ? 'Booked until ' + profile.bookedUntil : profile.availability %>
-      </p>
+
+      <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-body hero-in" style="--d:5">
+        <span class="inline-flex items-center gap-2">
+          <span class="relative flex size-2.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full <%= available ? 'bg-teal' : 'bg-gold' %> opacity-60"></span><span class="relative inline-flex size-2.5 rounded-full <%= available ? 'bg-teal' : 'bg-gold' %>"></span></span>
+          <%= !available && profile.bookedUntil ? 'Booked until ' + profile.bookedUntil : profile.availability %>
+        </span>
+        <span class="hidden h-4 w-px bg-line sm:block" aria-hidden="true"></span>
+        <span class="inline-flex items-center gap-2"><%- icon('database', 'size-4 text-gold-ink') %> Oracle 19c · RAC · DBA</span>
+      </div>
     </div>
+
     <div class="lg:col-span-5">
-      <div class="relative mx-auto max-w-sm lg:max-w-none">
+      <div class="hero-visual relative mx-auto max-w-sm lg:max-w-none" data-tilt>
+        <div class="hero-ring" aria-hidden="true"></div>
         <div class="absolute -left-4 -top-4 h-full w-full rounded-[18px] border border-gold/60" aria-hidden="true"></div>
-        <% if (brand.portrait) { %>
-          <div class="relative overflow-hidden rounded-[16px] bg-surface-2 <%= settings.branding.duotonePortrait ? 'duotone' : '' %>">
-            <%- img(brand.portrait, { aspect: '4/5', eager: true, sizes: '(min-width:1024px) 440px, 90vw', alt: brand.portrait.alt || 'Portrait of ' + profile.fullName }) %>
+        <div class="hero-float relative">
+          <% if (brand.portrait) { %>
+            <div class="relative overflow-hidden rounded-[16px] bg-surface-2 <%= settings.branding.duotonePortrait ? 'duotone' : '' %>">
+              <%- img(brand.portrait, { aspect: '4/5', eager: true, sizes: '(min-width:1024px) 440px, 90vw', alt: brand.portrait.alt || 'Portrait of ' + profile.fullName }) %>
+            </div>
+          <% } else { %>
+            <div class="monogram relative flex aspect-[4/5] flex-col justify-between overflow-hidden rounded-[16px] bg-navy p-8 text-navy-ink" role="img" aria-label="<%= profile.fullName %> monogram">
+              <span class="mono-label !text-[#9fb0c4]">Est. Lagos</span>
+              <span class="font-display text-[9rem] leading-[0.8] tracking-tight sm:text-[11rem]">TJ<span class="text-gold">.</span></span>
+              <span class="font-display text-xl italic text-[#d9dee6]">Engineer · Trainer · Founder</span>
+            </div>
+          <% } %>
+        </div>
+
+        <%# Oracle RAC terminal: decorative, typed by JS; full text is present for no-JS and reduced motion. %>
+        <figure class="oracle-term" aria-label="Example: checking a two-node Oracle RAC database">
+          <div class="flex items-center gap-1.5 border-b border-white/10 px-3 py-2">
+            <span class="size-2.5 rounded-full bg-[#e07a7a]"></span><span class="size-2.5 rounded-full bg-[#cfae74]"></span><span class="size-2.5 rounded-full bg-[#3b9c95]"></span>
+            <span class="ml-2 font-mono text-[0.68rem] text-[#9fb0c4]">sqlplus · PROD (RAC 19c)</span>
           </div>
-        <% } else { %>
-          <div class="relative flex aspect-[4/5] flex-col justify-between overflow-hidden rounded-[16px] bg-navy p-8 text-navy-ink" role="img" aria-label="<%= profile.fullName %> monogram">
-            <span class="mono-label !text-[#9fb0c4]">Est. Lagos</span>
-            <span class="font-display text-[9rem] leading-[0.8] tracking-tight sm:text-[11rem]">TJ<span class="text-gold">.</span></span>
-            <span class="font-display text-xl italic text-[#d9dee6]">Engineer · Trainer · Founder</span>
-          </div>
-        <% } %>
+          <pre class="px-3 py-3 font-mono text-[0.72rem] leading-[1.6] text-[#d9dee6]" data-terminal><span class="text-[#cfae74]">SQL&gt;</span> SELECT inst_name, status FROM gv$instance;
+
+INST_NAME   STATUS
+---------   ------
+PROD1       <span class="text-[#3b9c95]">OPEN</span>
+PROD2       <span class="text-[#3b9c95]">OPEN</span>
+
+<span class="text-[#9fb0c4]">-- 2 nodes · zero downtime</span> <span class="text-[#3b9c95]">✓</span></pre>
+        </figure>
       </div>
     </div>
   </div>
+
+  <% if (locals.ticker && ticker.length) { %>
+  <div class="ticker border-y border-line bg-surface/70 py-4 backdrop-blur" aria-label="Technologies">
+    <ul class="ticker-track" role="list">
+      <% for (const pass of [0, 1]) { %>
+        <% for (const t of ticker) { %><li <%= pass ? 'aria-hidden=true' : '' %>><span class="text-gold-ink">◆</span> <%= t %></li><% } %>
+      <% } %>
+    </ul>
+  </div>
+  <% } %>
 </section>

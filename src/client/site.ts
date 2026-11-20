@@ -1,3 +1,5 @@
+import { initMotion } from "./motion.js";
+
 // Public-site behaviour. Progressive enhancement only: every page works without JS.
 
 const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector<T & Element>(sel);
@@ -351,3 +353,6 @@ document.addEventListener("click", (e) => {
   const a = (e.target as Element).closest<HTMLElement>("[data-track]");
   if (a) track(a.dataset.track!, a.dataset.label ?? (a as HTMLAnchorElement).href);
 });
+
+
+initMotion();
